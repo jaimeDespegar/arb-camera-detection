@@ -1,4 +1,4 @@
-import cv2 as open_cv
+import cv2 as openCv
 import numpy as np
 
 from colors import COLOR_WHITE, COLOR_RED
@@ -14,28 +14,29 @@ class CoordinatesGenerator:
         self.caption = image
         self.color = color
 
-        self.image = open_cv.imread(image).copy()
+        self.image = openCv.imread(image).copy()
         self.click_count = 0
         self.ids = 0
         self.coordinates = []
+        self.thickness = 1
 
-        open_cv.namedWindow(self.caption, open_cv.WINDOW_GUI_EXPANDED)
-        open_cv.setMouseCallback(self.caption, self.drawRectangle)
+        openCv.namedWindow(self.caption, openCv.WINDOW_GUI_EXPANDED)
+        openCv.setMouseCallback(self.caption, self.drawRectangle)
 
     def buildSpaces(self):
         while True:
-            open_cv.imshow(self.caption, self.image)
-            key = open_cv.waitKey(0)
+            openCv.imshow(self.caption, self.image)
+            key = openCv.waitKey(0)
 
             if key == CoordinatesGenerator.KEY_RESET:
                 self.image = self.image.copy()
             elif key == CoordinatesGenerator.KEY_QUIT:
                 break
-        open_cv.destroyWindow(self.caption)
+        openCv.destroyWindow(self.caption)
 
     def drawRectangle(self, event, x, y, flags, params):
 
-        if event == open_cv.EVENT_LBUTTONDOWN:
+        if event == openCv.EVENT_LBUTTONDOWN:
             self.coordinates.append((x, y))
             self.click_count += 1
 
@@ -45,22 +46,14 @@ class CoordinatesGenerator:
             elif self.click_count > 1:
                 self.__handle_click_progress()
 
-        open_cv.imshow(self.caption, self.image)
+        openCv.imshow(self.caption, self.image)
 
     def __handle_click_progress(self):
-        open_cv.line(self.image, self.coordinates[-2], self.coordinates[-1], COLOR_RED , 1)
+        openCv.line(self.image, self.coordinates[-2], self.coordinates[-1], COLOR_RED , 1)
 
     def __handle_done(self):
-        open_cv.line(self.image,
-                     self.coordinates[2],
-                     self.coordinates[3],
-                     self.color,
-                     1)
-        open_cv.line(self.image,
-                     self.coordinates[3],
-                     self.coordinates[0],
-                     self.color,
-                     1)
+        openCv.line(self.image, self.coordinates[2], self.coordinates[3], self.color, self.thickness)
+        openCv.line(self.image, self.coordinates[3], self.coordinates[0], self.color, self.thickness)
 
         coordinates = np.array(self.coordinates)
 

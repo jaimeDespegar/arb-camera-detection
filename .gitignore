@@ -2,3 +2,4 @@
 .idea/*
 files/data/coordinates_1.yml
 __pycache__/*
+*.pyc
