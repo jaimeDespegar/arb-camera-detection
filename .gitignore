@@ -1,5 +1,4 @@
-# Test
-
+# Ignore files/folders
 .idea/*
 files/data/coordinates_1.yml
 __pycache__/*
