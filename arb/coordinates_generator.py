@@ -20,9 +20,9 @@ class CoordinatesGenerator:
         self.coordinates = []
 
         open_cv.namedWindow(self.caption, open_cv.WINDOW_GUI_EXPANDED)
-        open_cv.setMouseCallback(self.caption, self.__mouse_callback)
+        open_cv.setMouseCallback(self.caption, self.drawRectangle)
 
-    def generate(self):
+    def buildSpaces(self):
         while True:
             open_cv.imshow(self.caption, self.image)
             key = open_cv.waitKey(0)
@@ -33,7 +33,7 @@ class CoordinatesGenerator:
                 break
         open_cv.destroyWindow(self.caption)
 
-    def __mouse_callback(self, event, x, y, flags, params):
+    def drawRectangle(self, event, x, y, flags, params):
 
         if event == open_cv.EVENT_LBUTTONDOWN:
             self.coordinates.append((x, y))

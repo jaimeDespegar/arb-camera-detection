@@ -18,7 +18,7 @@ def main():
     if image_file is not None:
         with open(data_file, "w+") as points:
             generator = CoordinatesGenerator(image_file, points, COLOR_RED)
-            generator.generate()
+            generator.buildSpaces()
 
     with open(data_file, "r") as data:
         points = yaml.load(data)
