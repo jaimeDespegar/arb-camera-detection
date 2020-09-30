@@ -1,7 +1,7 @@
 import cv2 as open_cv
 import numpy as np
 
-from colors import COLOR_WHITE
+from colors import COLOR_WHITE, COLOR_RED
 from drawing_utils import draw_contours
 
 
@@ -48,7 +48,7 @@ class CoordinatesGenerator:
         open_cv.imshow(self.caption, self.image)
 
     def __handle_click_progress(self):
-        open_cv.line(self.image, self.coordinates[-2], self.coordinates[-1], (255, 0, 0), 1)
+        open_cv.line(self.image, self.coordinates[-2], self.coordinates[-1], COLOR_RED , 1)
 
     def __handle_done(self):
         open_cv.line(self.image,
