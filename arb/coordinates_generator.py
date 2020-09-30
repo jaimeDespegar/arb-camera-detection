@@ -62,15 +62,10 @@ class CoordinatesGenerator:
                      self.color,
                      1)
 
-        self.click_count = 0
-
         coordinates = np.array(self.coordinates)
 
-        self.output.write("-\n          id: " + str(self.ids) + "\n          coordinates: [" +
-                          "[" + str(self.coordinates[0][0]) + "," + str(self.coordinates[0][1]) + "]," +
-                          "[" + str(self.coordinates[1][0]) + "," + str(self.coordinates[1][1]) + "]," +
-                          "[" + str(self.coordinates[2][0]) + "," + str(self.coordinates[2][1]) + "]," +
-                          "[" + str(self.coordinates[3][0]) + "," + str(self.coordinates[3][1]) + "]]\n")
+        self.click_count = 0
+        self.writeCoordinateInFileData()
 
         draw_contours(self.image, coordinates, str(self.ids + 1), COLOR_WHITE)
 
@@ -78,3 +73,11 @@ class CoordinatesGenerator:
             self.coordinates.pop()
 
         self.ids += 1
+    
+
+    def writeCoordinateInFileData(self):
+        self.output.write("-\n          id: " + str(self.ids) + "\n          coordinates: [" +
+                          "[" + str(self.coordinates[0][0]) + "," + str(self.coordinates[0][1]) + "]," +
+                          "[" + str(self.coordinates[1][0]) + "," + str(self.coordinates[1][1]) + "]," +
+                          "[" + str(self.coordinates[2][0]) + "," + str(self.coordinates[2][1]) + "]," +
+                          "[" + str(self.coordinates[3][0]) + "," + str(self.coordinates[3][1]) + "]]\n")
