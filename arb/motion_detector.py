@@ -71,8 +71,14 @@ class MotionDetector:
                 continue
 
             (x, y, w, h) = open_cv.boundingRect(c)
-            open_cv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
+            if(self.isDetectInAreaOK(x, y, w, h)):
+                open_cv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
 
+    def isDetectInAreaOK(self,x, y, w, h):
+        if(x>30 and x <600 and y>100 and y<600):
+            return True
+        else:
+            return False
     # ver nombre
     def calculateMask(self, coordinates_data):
         for p in coordinates_data:
