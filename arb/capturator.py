@@ -5,7 +5,7 @@ class Capturator:
     
     def __init__(self):
         self.id = 0    
-        self.folderImages = '../files/images/'
+        self.folderImages = "../files/images/"
         
     def takePhoto(self, capture):
         
