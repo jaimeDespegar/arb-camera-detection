@@ -2,7 +2,7 @@ import argparse
 import yaml
 from coordinates_generator import CoordinatesGenerator
 from motion_detector import MotionDetector
-from colors import *
+from utils.colors import *
 import logging
 
 

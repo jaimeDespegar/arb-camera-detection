@@ -1,7 +1,7 @@
 import cv2 as openCv
 import numpy as np
 
-from colors import COLOR_WHITE, COLOR_RED
+from utils.colors import COLOR_WHITE, COLOR_RED
 from drawing_utils import draw_contours
 
 

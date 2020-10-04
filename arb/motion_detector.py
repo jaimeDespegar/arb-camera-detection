@@ -2,8 +2,8 @@ import cv2 as open_cv
 import numpy as np
 import logging
 from drawing_utils import draw_contours
-from colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
-
+from utils.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
+from utils.keys import KEY_QUIT
 
 class MotionDetector:
     LAPLACIAN = 1.4
@@ -93,7 +93,7 @@ class MotionDetector:
 
             open_cv.imshow(str(self.video), new_frame)
             k = open_cv.waitKey(1)
-            if k == ord("q"):
+            if k == KEY_QUIT:
                 break
         capture.release()
         open_cv.destroyAllWindows()
