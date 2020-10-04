@@ -1,6 +1,7 @@
 import cv2 as open_cv
 import numpy as np
 import logging
+import imutils
 from drawing_utils import draw_contours
 from utils.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
 from utils.keys import KEY_QUIT
@@ -26,7 +27,9 @@ class MotionDetector:
 
         statuses = [False] * len(coordinates_data)
         times = [None] * len(coordinates_data)
-
+        
+        firstFrame = None
+        
         while capture.isOpened():
             result, frame = capture.read()
             if frame is None:
@@ -39,15 +42,36 @@ class MotionDetector:
             grayed = open_cv.cvtColor(blurred, open_cv.COLOR_BGR2GRAY)
             new_frame = frame.copy()
 
+            if firstFrame is None:
+                firstFrame = grayed
+                continue
+
+            self.detectMoves(new_frame, firstFrame, grayed)
             self.calculateTimesByStatus(capture, grayed, times, statuses)
             self.drawContoursInFrame(new_frame, statuses)
 
             open_cv.imshow(str(self.video), new_frame)
+
             k = open_cv.waitKey(10)
             if k == KEY_QUIT:
                 break
+
         capture.release()
         open_cv.destroyAllWindows()
+
+    def detectMoves(self, frame, firstFrame, frameGray):
+        frameDelta = open_cv.absdiff(firstFrame, frameGray)
+        thresh = open_cv.threshold(frameDelta, 25, 255, open_cv.THRESH_BINARY)[1]
+        thresh = open_cv.dilate(thresh, None, iterations=2)
+        cnts = open_cv.findContours(thresh.copy(), open_cv.RETR_EXTERNAL, open_cv.CHAIN_APPROX_SIMPLE)
+        cnts = imutils.grab_contours(cnts)
+
+        for c in cnts: # loop over the contours
+            if open_cv.contourArea(c) < 1300: #ignorar lo que es menor al min-area
+                continue
+
+            (x, y, w, h) = open_cv.boundingRect(c)
+            open_cv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
 
     # ver nombre
     def calculateMask(self, coordinates_data):
