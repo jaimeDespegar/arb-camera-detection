@@ -8,7 +8,6 @@ class Capturator:
     
     def takePhoto(self, capture):
         
-        #capture = openCv.VideoCapture(source)
         leido, frame = capture.read()
         
         if leido == True:
