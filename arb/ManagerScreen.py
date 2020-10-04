@@ -15,8 +15,10 @@ def parse_args():
 
     return parser.parse_args()
 
+
 def resolveSource(args):
     return 0 if args.source.lower() == 'webcam' else args.source
+
 
 def main():
 
