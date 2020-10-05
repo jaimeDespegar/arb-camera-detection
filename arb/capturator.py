@@ -4,24 +4,18 @@ from datetime import datetime
 class Capturator:
     
     def __init__(self):
-        self.id = 0    
+        #self.id = 0    
         self.folderImages = "../files/images/"
         
     def takePhoto(self, capture):
-        now = datetime.now()
-        print("now =", now)
-        # dd/mm/YY H:M:S
-        dt_string = now.strftime("%d-%m-%Y_%H:%M:%S")
-        print("date and time =", dt_string)	
+        dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
         leido, frame = capture.read()
         
         if leido == True:
-            imgName = self.folderImages + "screen_"+ dt_string + ".jpg"
-            print("imagen name " + imgName)
-            openCv.imwrite(imgName, frame)
-            #str(self.id)
+            imageName = self.folderImages + "image_"+ dateText + ".jpg"
+            openCv.imwrite(imageName, frame)
             print("Foto tomada correctamente")
         else:
             print("Error al acceder al contenido")
 
-        self.id = self.id + 1
+        #self.id = self.id + 1
