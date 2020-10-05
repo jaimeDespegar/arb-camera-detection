@@ -10,12 +10,14 @@ def draw_contours(image,
                   line_thickness=1,
                   font=open_cv.FONT_HERSHEY_SIMPLEX,
                   font_scale=0.5):
+
     open_cv.drawContours(image,
                          [coordinates],
                          contourIdx=-1,
                          color=border_color,
                          thickness=2,
                          lineType=open_cv.LINE_8)
+
     moments = open_cv.moments(coordinates)
 
     center = (int(moments["m10"] / moments["m00"]) - 3,
