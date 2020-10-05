@@ -121,6 +121,7 @@ class MotionDetector:
                 if position_in_seconds - times[index] >= MotionDetector.DETECT_DELAY:
                     statuses[index] = status
                     times[index] = None
+                    print("movimiento detectado!")
                 continue
 
             if timesIsNone and self.status_changed(statuses, index, status):
