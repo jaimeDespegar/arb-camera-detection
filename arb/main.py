@@ -1,7 +1,7 @@
 import argparse
 import yaml
-from coordinates_generator import CoordinatesGenerator
-from motion_detector import MotionDetector
+from coordinatesGenerator import CoordinatesGenerator
+from motionDetector import MotionDetector
 from utils.colors import *
 import logging
 
