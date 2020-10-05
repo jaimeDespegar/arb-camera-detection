@@ -1,4 +1,4 @@
-import cv2 as open_cv
+import cv2 as openCv
 import numpy as np
 import logging
 import imutils
@@ -21,8 +21,8 @@ class MotionDetector:
         self.capturator = Capturator()
 
     def detect_motion(self):
-        capture = open_cv.VideoCapture(self.video)
-        capture.set(open_cv.CAP_PROP_POS_FRAMES, self.start_frame)
+        capture = openCv.VideoCapture(self.video)
+        capture.set(openCv.CAP_PROP_POS_FRAMES, self.start_frame)
         coordinates_data = self.coordinates_data
 
         self.calculateMask(coordinates_data)
@@ -40,8 +40,8 @@ class MotionDetector:
             if not result:
                 raise CaptureReadError("Error reading video capture on frame %s" % str(frame))
 
-            blurred = open_cv.GaussianBlur(frame.copy(), (5, 5), 3)
-            grayed = open_cv.cvtColor(blurred, open_cv.COLOR_BGR2GRAY)
+            blurred = openCv.GaussianBlur(frame.copy(), (5, 5), 3)
+            grayed = openCv.cvtColor(blurred, openCv.COLOR_BGR2GRAY)
             new_frame = frame.copy()
 
             if firstFrame is None:
@@ -52,42 +52,39 @@ class MotionDetector:
             self.calculateStatusByTime(capture, grayed, times, statuses)
             self.drawContoursInFrame(new_frame, statuses)
 
-            open_cv.imshow(str(self.video), new_frame)
+            openCv.imshow(str(self.video), new_frame)
 
-            k = open_cv.waitKey(10)
+            k = openCv.waitKey(10)
             if k == KEY_QUIT:
                 break
 
         capture.release()
-        open_cv.destroyAllWindows()
+        openCv.destroyAllWindows()
 
     def detectMoves(self, frame, firstFrame, frameGray):
-        frameDelta = open_cv.absdiff(firstFrame, frameGray)
-        thresh = open_cv.threshold(frameDelta, 25, 255, open_cv.THRESH_BINARY)[1]
-        thresh = open_cv.dilate(thresh, None, iterations=2)
-        cnts = open_cv.findContours(thresh.copy(), open_cv.RETR_EXTERNAL, open_cv.CHAIN_APPROX_SIMPLE)
+        frameDelta = openCv.absdiff(firstFrame, frameGray)
+        thresh = openCv.threshold(frameDelta, 25, 255, openCv.THRESH_BINARY)[1]
+        thresh = openCv.dilate(thresh, None, iterations=2)
+        cnts = openCv.findContours(thresh.copy(), openCv.RETR_EXTERNAL, openCv.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
 
         for c in cnts: # loop over the contours
-            if (open_cv.contourArea(c) < 400) or (open_cv.contourArea(c) > 700): #ignorar lo que es menor al min-area
+            if (openCv.contourArea(c) < 900): # ignorar > min-area (openCv.contourArea(c) < 400)
                 continue
 
-            (x, y, w, h) = open_cv.boundingRect(c)
-            open_cv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
-            #if(self.isDetectInAreaOK(x, y, w, h)):
-            #    open_cv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
+            (x, y, w, h) = openCv.boundingRect(c)
+            #openCv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
+            if(self.isDetectInAreaOK(x, y, w, h)):
+                openCv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
 
     def isDetectInAreaOK(self,x, y, w, h):
-        if(x>30 and x <600 and y>100 and y<600):
-            return True
-        else:
-            return False
+        return (x > 30 and x < 600 and y > 100 and y < 600)
 
     # ver nombre
     def calculateMask(self, coordinates_data):
         for p in coordinates_data:
             coordinates = self._coordinates(p)
-            rect = open_cv.boundingRect(coordinates)
+            rect = openCv.boundingRect(coordinates)
 
             new_coordinates = coordinates.copy()
             new_coordinates[:, 0] = coordinates[:, 0] - rect[0]
@@ -96,20 +93,20 @@ class MotionDetector:
             self.contours.append(coordinates)
             self.bounds.append(rect)
 
-            mask = open_cv.drawContours(
+            mask = openCv.drawContours(
                 np.zeros((rect[3], rect[2]), dtype=np.uint8),
                 [new_coordinates],
                 contourIdx=-1,
                 color=255,
                 thickness=-1,
-                lineType=open_cv.LINE_8)
+                lineType=openCv.LINE_8)
 
             mask = mask == 255
             self.mask.append(mask)        
 
     # ver nombre
     def calculateStatusByTime(self, capture, grayed, times, statuses):
-        position_in_seconds = capture.get(open_cv.CAP_PROP_POS_MSEC) / 1000.0
+        position_in_seconds = capture.get(openCv.CAP_PROP_POS_MSEC) / 1000.0
 
         for index, c in enumerate(self.coordinates_data):
             status = self.__apply(grayed, index, c)
@@ -120,18 +117,14 @@ class MotionDetector:
                 continue
 
             if not timesIsNone and self.status_changed(statuses, index, status):
-
                 if position_in_seconds - times[index] >= MotionDetector.DETECT_DELAY:
                     statuses[index] = status
                     times[index] = None
-
                     print("movimiento detectado!")
-
-                    print('position in seconds ' + str(position_in_seconds))
-                    print('times index ' + str(times[index]))
-                    print(status)
+                    #print('position in seconds ' + str(position_in_seconds))
+                    #print('times index ' + str(times[index]))
+                    #print(status)
                     #self.capturator.takePhoto(capture)
-
                 continue
 
             if timesIsNone and self.status_changed(statuses, index, status):
@@ -147,7 +140,7 @@ class MotionDetector:
         coordinates = self._coordinates(p)
         rect = self.bounds[index]
         roi_gray = grayed[rect[1]:(rect[1] + rect[3]), rect[0]:(rect[0] + rect[2])]
-        laplacian = open_cv.Laplacian(roi_gray, open_cv.CV_64F)
+        laplacian = openCv.Laplacian(roi_gray, openCv.CV_64F)
 
         coordinates[:, 0] = coordinates[:, 0] - rect[0]
         coordinates[:, 1] = coordinates[:, 1] - rect[1]
