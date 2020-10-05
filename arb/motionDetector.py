@@ -5,6 +5,7 @@ import imutils
 from drawingUtils import draw_contours
 from utils.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
 from utils.keys import KEY_QUIT
+from capturator import Capturator
 
 class MotionDetector:
     LAPLACIAN = 1.4
@@ -17,6 +18,7 @@ class MotionDetector:
         self.contours = []
         self.bounds = []
         self.mask = []
+        self.capturator = Capturator()
 
     def detect_motion(self):
         capture = open_cv.VideoCapture(self.video)
@@ -47,7 +49,7 @@ class MotionDetector:
                 continue
 
             self.detectMoves(new_frame, firstFrame, grayed)
-            self.calculateTimesByStatus(capture, grayed, times, statuses)
+            self.calculateStatusByTime(capture, grayed, times, statuses)
             self.drawContoursInFrame(new_frame, statuses)
 
             open_cv.imshow(str(self.video), new_frame)
@@ -106,7 +108,7 @@ class MotionDetector:
             self.mask.append(mask)        
 
     # ver nombre
-    def calculateTimesByStatus(self, capture, grayed, times, statuses):
+    def calculateStatusByTime(self, capture, grayed, times, statuses):
         position_in_seconds = capture.get(open_cv.CAP_PROP_POS_MSEC) / 1000.0
 
         for index, c in enumerate(self.coordinates_data):
@@ -118,37 +120,39 @@ class MotionDetector:
                 continue
 
             if not timesIsNone and self.status_changed(statuses, index, status):
+
                 if position_in_seconds - times[index] >= MotionDetector.DETECT_DELAY:
                     statuses[index] = status
                     times[index] = None
+
                     print("movimiento detectado!")
+
+                    print('position in seconds ' + str(position_in_seconds))
+                    print('times index ' + str(times[index]))
+                    print(status)
+                    #self.capturator.takePhoto(capture)
+
                 continue
 
             if timesIsNone and self.status_changed(statuses, index, status):
                 times[index] = position_in_seconds
         
-    def drawContoursInFrame(self, newFrame, statuses):
+    def drawContoursInFrame(self, frame, statuses):
         for index, p in enumerate(self.coordinates_data):
             coordinates = self._coordinates(p)
             color = COLOR_GREEN if statuses[index] else COLOR_BLUE
-            draw_contours(newFrame, coordinates, str(p["id"] + 1), COLOR_WHITE, color)        
+            draw_contours(frame, coordinates, str(p["id"] + 1), COLOR_WHITE, color)        
 
     def __apply(self, grayed, index, p):
         coordinates = self._coordinates(p)
-        logging.debug("points: %s", coordinates)
-
         rect = self.bounds[index]
-        logging.debug("rect: %s", rect)
-
         roi_gray = grayed[rect[1]:(rect[1] + rect[3]), rect[0]:(rect[0] + rect[2])]
         laplacian = open_cv.Laplacian(roi_gray, open_cv.CV_64F)
-        logging.debug("laplacian: %s", laplacian)
 
         coordinates[:, 0] = coordinates[:, 0] - rect[0]
         coordinates[:, 1] = coordinates[:, 1] - rect[1]
 
         status = np.mean(np.abs(laplacian * self.mask[index])) < MotionDetector.LAPLACIAN
-        logging.debug("status: %s", status)
 
         return status
 
