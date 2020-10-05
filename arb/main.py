@@ -2,18 +2,20 @@ import argparse
 import yaml
 from coordinatesGenerator import CoordinatesGenerator
 from motionDetector import MotionDetector
+from utils.fileReader import FileReader
 from utils.colors import *
 import logging
 
 
 def main():
     logging.basicConfig(level=logging.INFO)
-
-    args = parse_args()
-
-    image_file = args.image_file
-    data_file = args.data_file
-    start_frame = args.start_frame
+    
+    config = FileReader(parse_args().config_file)
+    
+    image_file = config.getProp('image_file')
+    video_file = config.getProp('video_file')
+    data_file = config.getProp('data_file')
+    start_frame = int(config.getProp('start_frame'))
 
     if image_file is not None:
         with open(data_file, "w+") as points:
@@ -22,33 +24,17 @@ def main():
 
     with open(data_file, "r") as data:
         points = yaml.load(data)
-        detector = MotionDetector(args.video_file, points, int(start_frame))
+        detector = MotionDetector(video_file, points, int(start_frame))
         detector.detect_motion()
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Generates Coordinates File')
 
-    parser.add_argument("--image",
-                        dest="image_file",
-                        required=False,
-                        help="Image file to generate coordinates on")
-
-    parser.add_argument("--video",
-                        dest="video_file",
+    parser.add_argument("--config",
+                        dest="config_file",
                         required=True,
-                        help="Video file to detect motion on")
-
-    parser.add_argument("--data",
-                        dest="data_file",
-                        required=True,
-                        help="Data file to be used with OpenCV")
-
-    parser.add_argument("--start-frame",
-                        dest="start_frame",
-                        required=False,
-                        default=1,
-                        help="Starting frame on the video")
+                        help="Config file to start app")
 
     return parser.parse_args()
 
