@@ -1,13 +1,11 @@
 import cv2 as openCv
 import numpy as np
-
+from utils.keys import KEY_PHOTO, KEY_QUIT
 from utils.colors import COLOR_WHITE, COLOR_RED
-from drawing_utils import draw_contours
+from drawingUtils import draw_contours
 
 
 class CoordinatesGenerator:
-    KEY_RESET = ord("r")
-    KEY_QUIT = ord("q")
 
     def __init__(self, image, output, color):
         self.output = output
@@ -28,9 +26,9 @@ class CoordinatesGenerator:
             openCv.imshow(self.caption, self.image)
             key = openCv.waitKey(0)
 
-            if key == CoordinatesGenerator.KEY_RESET:
-                self.image = self.image.copy()
-            elif key == CoordinatesGenerator.KEY_QUIT:
+            #if key == KEY_RESET:
+            #    self.image = self.image.copy()
+            if key == KEY_QUIT:
                 break
         openCv.destroyWindow(self.caption)
 

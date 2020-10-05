@@ -2,7 +2,7 @@ import cv2 as open_cv
 import numpy as np
 import logging
 import imutils
-from drawing_utils import draw_contours
+from drawingUtils import draw_contours
 from utils.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
 from utils.keys import KEY_QUIT
 
@@ -80,6 +80,7 @@ class MotionDetector:
             return True
         else:
             return False
+
     # ver nombre
     def calculateMask(self, coordinates_data):
         for p in coordinates_data:
