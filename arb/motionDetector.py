@@ -27,7 +27,7 @@ class MotionDetector:
 
         self.calculateMask(coordinates_data)
 
-        statuses = [False] * len(coordinates_data)
+        statuses = [True] * len(coordinates_data)
         times = [None] * len(coordinates_data)
         
         firstFrame = None
@@ -121,10 +121,7 @@ class MotionDetector:
                     statuses[index] = status
                     times[index] = None
                     print("movimiento detectado!")
-                    #print('position in seconds ' + str(position_in_seconds))
-                    #print('times index ' + str(times[index]))
-                    #print(status)
-                    #self.capturator.takePhoto(capture)
+                    self.capturator.takePhoto(capture)
                 continue
 
             if timesIsNone and self.status_changed(statuses, index, status):
@@ -145,9 +142,7 @@ class MotionDetector:
         coordinates[:, 0] = coordinates[:, 0] - rect[0]
         coordinates[:, 1] = coordinates[:, 1] - rect[1]
 
-        status = np.mean(np.abs(laplacian * self.mask[index])) < MotionDetector.LAPLACIAN
-
-        return status
+        return np.mean(np.abs(laplacian * self.mask[index])) < MotionDetector.LAPLACIAN
 
     @staticmethod
     def _coordinates(p):
