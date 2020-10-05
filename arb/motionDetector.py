@@ -108,8 +108,8 @@ class MotionDetector:
     def calculateStatusByTime(self, capture, grayed, times, statuses):
         position_in_seconds = capture.get(openCv.CAP_PROP_POS_MSEC) / 1000.0
 
-        for index, c in enumerate(self.coordinates_data):
-            status = self.__apply(grayed, index, c)
+        for index, itemData in enumerate(self.coordinates_data):
+            status = self.__apply(grayed, index, itemData)
             timesIsNone = times[index] is None
 
             if not timesIsNone and self.same_status(statuses, index, status):
@@ -145,8 +145,8 @@ class MotionDetector:
         return np.mean(np.abs(laplacian * self.mask[index])) < MotionDetector.LAPLACIAN
 
     @staticmethod
-    def _coordinates(p):
-        return np.array(p["coordinates"])
+    def _coordinates(data):
+        return np.array(data["coordinates"])
 
     @staticmethod
     def same_status(coordinates_status, index, status):
