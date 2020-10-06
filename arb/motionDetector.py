@@ -69,11 +69,10 @@ class MotionDetector:
         cnts = imutils.grab_contours(cnts)
 
         for c in cnts: # loop over the contours
-            if (openCv.contourArea(c) < 900): # ignorar > min-area (openCv.contourArea(c) < 400)
+            if (openCv.contourArea(c) < 900):
                 continue
 
             (x, y, w, h) = openCv.boundingRect(c)
-            #openCv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
             if(self.isDetectInAreaOK(x, y, w, h)):
                 openCv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
 

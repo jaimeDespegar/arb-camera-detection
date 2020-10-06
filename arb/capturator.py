@@ -4,7 +4,6 @@ from datetime import datetime
 class Capturator:
     
     def __init__(self):
-        #self.id = 0    
         self.folderImages = "../files/images/"
         
     def takePhoto(self, capture):
@@ -17,5 +16,3 @@ class Capturator:
             print("Foto tomada correctamente")
         else:
             print("Error al acceder al contenido")
-
-        #self.id = self.id + 1
