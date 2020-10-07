@@ -29,7 +29,6 @@ class MotionDetector:
 
         statuses = [True] * len(coordinates_data)
         times = [None] * len(coordinates_data)
-        
         firstFrame = None
         
         while capture.isOpened():
@@ -65,10 +64,10 @@ class MotionDetector:
         frameDelta = openCv.absdiff(firstFrame, frameGray)
         thresh = openCv.threshold(frameDelta, 25, 255, openCv.THRESH_BINARY)[1]
         thresh = openCv.dilate(thresh, None, iterations=2)
-        cnts = openCv.findContours(thresh.copy(), openCv.RETR_EXTERNAL, openCv.CHAIN_APPROX_SIMPLE)
-        cnts = imutils.grab_contours(cnts)
+        contours = openCv.findContours(thresh.copy(), openCv.RETR_EXTERNAL, openCv.CHAIN_APPROX_SIMPLE)
+        contours = imutils.grab_contours(contours)
 
-        for c in cnts: # loop over the contours
+        for c in contours:
             if (openCv.contourArea(c) < 900):
                 continue
 
@@ -108,7 +107,7 @@ class MotionDetector:
         position_in_seconds = capture.get(openCv.CAP_PROP_POS_MSEC) / 1000.0
 
         for index, itemData in enumerate(self.coordinates_data):
-            status = self.__apply(grayed, index, itemData)
+            status = self.apply(grayed, index, itemData)
             timesIsNone = times[index] is None
 
             if not timesIsNone and self.same_status(statuses, index, status):
@@ -132,7 +131,7 @@ class MotionDetector:
             color = COLOR_GREEN if statuses[index] else COLOR_BLUE
             draw_contours(frame, coordinates, str(p["id"] + 1), COLOR_WHITE, color)        
 
-    def __apply(self, grayed, index, p):
+    def apply(self, grayed, index, p):
         coordinates = self._coordinates(p)
         rect = self.bounds[index]
         roi_gray = grayed[rect[1]:(rect[1] + rect[3]), rect[0]:(rect[0] + rect[2])]

@@ -26,8 +26,6 @@ class CoordinatesGenerator:
             openCv.imshow(self.caption, self.image)
             key = openCv.waitKey(0)
 
-            #if key == KEY_RESET:
-            #    self.image = self.image.copy()
             if key == KEY_QUIT:
                 break
         openCv.destroyWindow(self.caption)
