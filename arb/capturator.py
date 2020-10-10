@@ -3,8 +3,8 @@ from datetime import datetime
 
 class Capturator:
     
-    def __init__(self):
-        self.folderImages = "../files/images/"
+    def __init__(self, folderImages):
+        self.folderImages = folderImages
         
     def takePhoto(self, capture):
         dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")

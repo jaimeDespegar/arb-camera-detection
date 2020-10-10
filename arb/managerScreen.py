@@ -6,7 +6,7 @@ import sys
 
 
 def main():
-    capturator = Capturator()
+    capturator = Capturator('../files/images/')
     source = resolveSource(parse_args())
     capture = openCv.VideoCapture(source)
     capture.set(openCv.CAP_PROP_POS_FRAMES, 500)

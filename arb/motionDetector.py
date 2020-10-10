@@ -11,14 +11,14 @@ class MotionDetector:
     LAPLACIAN = 1.4
     DETECT_DELAY = 1
 
-    def __init__(self, video, coordinates, start_frame):
+    def __init__(self, video, coordinates, start_frame, folder_photos):
         self.video = video
         self.coordinates_data = coordinates
         self.start_frame = start_frame
         self.contours = []
         self.bounds = []
         self.mask = []
-        self.capturator = Capturator()
+        self.capturator = Capturator(folder_photos)
 
     def detect_motion(self):
         capture = openCv.VideoCapture(self.video)
