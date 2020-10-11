@@ -3,16 +3,18 @@ import numpy as np
 from utils.keys import KEY_PHOTO, KEY_QUIT
 from utils.colors import COLOR_WHITE, COLOR_RED
 from drawingUtils import draw_contours
+from homography import Homography #nuevo
 
 
 class CoordinatesGenerator:
 
-    def __init__(self, image, output, color):
+    def __init__(self, imageHomography, output, color):
         self.output = output
-        self.caption = image
+        self.caption = imageHomography
         self.color = color
 
-        self.image = openCv.imread(image).copy()
+        self.image = openCv.imread(imageHomography).copy() #original
+        #self.image= imageHomography.copy() #nuevo
         self.click_count = 0
         self.ids = 0
         self.coordinates = []

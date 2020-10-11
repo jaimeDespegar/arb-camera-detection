@@ -9,12 +9,13 @@ def main():
     capturator = Capturator('../files/images/')
     source = resolveSource(parse_args())
     capture = openCv.VideoCapture(source)
-    capture.set(openCv.CAP_PROP_POS_FRAMES, 500)
+    openCv.namedWindow('frame', openCv.WINDOW_NORMAL)
+    capture.set(openCv.CAP_PROP_POS_FRAMES, 200)#500
 
     while(capture.isOpened()):
         readed, frame = capture.read()
-        openCv.imshow('frame', frame)
-        key = openCv.waitKey(20)
+        openCv.imshow('frame', frame)#nuevo, ajusta el tamaño ventana
+        key = openCv.waitKey(20)#20
 
         if key == KEY_PHOTO:
             capturator.takePhoto(capture)

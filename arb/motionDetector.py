@@ -22,6 +22,7 @@ class MotionDetector:
 
     def detect_motion(self):
         capture = openCv.VideoCapture(self.video)
+        openCv.namedWindow('frame', openCv.WINDOW_NORMAL) #nuevo ajuste imagen
         capture.set(openCv.CAP_PROP_POS_FRAMES, self.start_frame)
         coordinates_data = self.coordinates_data
 
@@ -53,7 +54,7 @@ class MotionDetector:
 
             openCv.imshow(str(self.video), new_frame)
 
-            k = openCv.waitKey(10)
+            k = openCv.waitKey(50) #10
             if k == KEY_QUIT:
                 break
 

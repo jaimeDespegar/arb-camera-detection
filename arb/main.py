@@ -5,11 +5,17 @@ from motionDetector import MotionDetector
 from utils.fileReader import FileReader
 from utils.colors import *
 import logging
+from homography import Homography #nuevo
+from homography_video import Homography_video #nuevo
+import cv2 as openCv #nuevo
 
 
 def main():
     logging.basicConfig(level=logging.INFO)
     
+    #get_image_homography() #nuevo
+    get_video_homography() #nuevo
+
     config = FileReader(parse_args().config_file)
     
     image_file = config.getProp('image_file')
@@ -38,6 +44,19 @@ def parse_args():
                         help="Config file to start app")
 
     return parser.parse_args()
+
+def get_image_homography():
+    puntos = [] #nuevo
+    imagen= openCv.imread('../files/images/biciReal.jpg') #nuevo
+    homography= Homography(puntos,imagen) #nuevo
+    homography.getHomography() #nuevo
+
+def get_video_homography():
+    puntos = [] #nuevo
+    cap = openCv.VideoCapture('../files/videos/bicicleteroReal.mp4') #nuevo
+    ret, frame = cap.read() #nuevo
+    homography_video= Homography_video(puntos,frame) #nuevo
+    homography_video.getHomography_video() #nuevo
 
 
 if __name__ == '__main__':
