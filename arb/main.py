@@ -14,7 +14,7 @@ def main():
     logging.basicConfig(level=logging.INFO)
     
     #get_image_homography() #nuevo
-    get_video_homography() #nuevo
+    #get_video_homography() #nuevo
 
     config = FileReader(parse_args().config_file)
     

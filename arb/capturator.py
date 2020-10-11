@@ -6,12 +6,12 @@ class Capturator:
     def __init__(self, folderImages):
         self.folderImages = folderImages
         
-    def takePhoto(self, capture):
+    def takePhoto(self, capture, description):
         dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
         leido, frame = capture.read()
         
         if leido == True:
-            imageName = self.folderImages + "image_"+ dateText + ".jpg"
+            imageName = self.folderImages + description+"_"+ dateText + ".jpg"
             openCv.imwrite(imageName, frame)
             print("Foto tomada correctamente")
         else:

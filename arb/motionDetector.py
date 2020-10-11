@@ -3,7 +3,7 @@ import numpy as np
 import logging
 import imutils
 from drawingUtils import draw_contours
-from utils.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE
+from utils.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE, COLOR_RED
 from utils.keys import KEY_QUIT
 from capturator import Capturator
 
@@ -117,10 +117,19 @@ class MotionDetector:
 
             if not timesIsNone and self.status_changed(statuses, index, status):
                 if position_in_seconds - times[index] >= MotionDetector.DETECT_DELAY:
-                    statuses[index] = status
+                    statuses[index] = status #true si está libre, false ocupado
                     times[index] = None
                     print("movimiento detectado!")
-                    self.capturator.takePhoto(capture)
+                    estacionamiento= index+1
+                    notificacionFoto= ""
+                    if(statuses[index]):
+                        print("Egreso del estacionamiento: ",estacionamiento)
+                        notificacionFoto= "Egreso del estacionamiento: "+str(estacionamiento)
+                        #Activar Timer, si pasa X tiempo tirar otro print!
+                    else:
+                        print("Ingreso del estacionamiento: ",estacionamiento)
+                        notificacionFoto= "Ingreso del estacionamiento: "+str(estacionamiento)
+                    self.capturator.takePhoto(capture,notificacionFoto)
                 continue
 
             if timesIsNone and self.status_changed(statuses, index, status):
@@ -130,7 +139,9 @@ class MotionDetector:
         for index, p in enumerate(self.coordinates_data):
             coordinates = self._coordinates(p)
             color = COLOR_GREEN if statuses[index] else COLOR_BLUE
-            draw_contours(frame, coordinates, str(p["id"] + 1), COLOR_WHITE, color)        
+            draw_contours(frame, coordinates, str(p["id"] + 1), COLOR_WHITE, color)
+            #if(color == COLOR_BLUE):#es el color rojo!
+                #print("Ingreso :", str(p["id"] + 1))     
 
     def apply(self, grayed, index, p):
         coordinates = self._coordinates(p)
