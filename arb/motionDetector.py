@@ -8,8 +8,8 @@ from utils.keys import KEY_QUIT
 from capturator import Capturator
 
 class MotionDetector:
-    LAPLACIAN = 1.4
-    DETECT_DELAY = 1
+    LAPLACIAN = 2 #1.4
+    DETECT_DELAY = 3 #1
 
     def __init__(self, video, coordinates, start_frame, folder_photos):
         self.video = video
