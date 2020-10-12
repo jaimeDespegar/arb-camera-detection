@@ -9,10 +9,11 @@ class Capturator:
     def takePhoto(self, capture, description):
         dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
         leido, frame = capture.read()
-        
+        imageName=""
         if leido == True:
             imageName = self.folderImages + description+"_"+ dateText + ".jpg"
             openCv.imwrite(imageName, frame)
-            print("Foto tomada correctamente")
+            #print("Foto tomada correctamente")
         else:
-            print("Error al acceder al contenido")
+            #print("Error al acceder al contenido")
+        return imageName

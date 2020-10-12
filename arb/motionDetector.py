@@ -6,6 +6,8 @@ from drawingUtils import draw_contours
 from utils.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE, COLOR_RED
 from utils.keys import KEY_QUIT
 from capturator import Capturator
+from register import Register
+from datetime import datetime
 
 class MotionDetector:
     LAPLACIAN = 2 #1.4
@@ -19,6 +21,7 @@ class MotionDetector:
         self.bounds = []
         self.mask = []
         self.capturator = Capturator(folder_photos)
+        self.registers = []
 
     def detect_motion(self):
         capture = openCv.VideoCapture(self.video)
@@ -119,22 +122,37 @@ class MotionDetector:
                 if position_in_seconds - times[index] >= MotionDetector.DETECT_DELAY:
                     statuses[index] = status #true si está libre, false ocupado
                     times[index] = None
-                    print("movimiento detectado!")
+                    #print("movimiento detectado!")
                     estacionamiento= index+1
                     notificacionFoto= ""
+                    dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
+
                     if(statuses[index]):
-                        print("Egreso del estacionamiento: ",estacionamiento)
-                        notificacionFoto= "Egreso del estacionamiento: "+str(estacionamiento)
+                        #print("Egreso del estacionamiento: ",estacionamiento)
+                        notificacionFoto= "Egreso_del_estacionamiento:"+str(estacionamiento)+"__"+dateText
                         #Activar Timer, si pasa X tiempo tirar otro print!
                     else:
-                        print("Ingreso del estacionamiento: ",estacionamiento)
-                        notificacionFoto= "Ingreso del estacionamiento: "+str(estacionamiento)
-                    self.capturator.takePhoto(capture,notificacionFoto)
+                        #print("Ingreso del estacionamiento: ",estacionamiento)
+                        notificacionFoto= "Ingreso_del_estacionamiento:"+str(estacionamiento)+"__"+dateText
+                    
+
+                    imageName=self.capturator.takePhoto(capture,notificacionFoto)
+                    self.register= Register(statuses[index],estacionamiento,imageName,dateText)
+                    self.registers.append(self.register)
+                    self.activateAlarm()
                 continue
 
             if timesIsNone and self.status_changed(statuses, index, status):
                 times[index] = position_in_seconds
-        
+    
+    def activateAlarm(self):
+        for x in range(0,len(self.registers)):
+            estadia= self.registers[x]
+            #print("")
+            #print(estadia.getPosition())
+            #print(estadia.getHour())
+            #print(estadia.getPathFoto())
+
     def drawContoursInFrame(self, frame, statuses):
         for index, p in enumerate(self.coordinates_data):
             coordinates = self._coordinates(p)
