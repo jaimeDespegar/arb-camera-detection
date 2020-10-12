@@ -8,10 +8,12 @@ from utils.keys import KEY_QUIT
 from capturator import Capturator
 from register import Register
 from datetime import datetime
+import time
 
 class MotionDetector:
     LAPLACIAN = 2 #1.4
     DETECT_DELAY = 3 #1
+    TOLERANCIA = 5 # ALARMA
 
     def __init__(self, video, coordinates, start_frame, folder_photos):
         self.video = video
@@ -35,6 +37,10 @@ class MotionDetector:
         times = [None] * len(coordinates_data)
         firstFrame = None
         
+        #nuevo
+        comienzo = time.time() 
+        print('COMIENZO:', comienzo)
+        
         while capture.isOpened():
             result, frame = capture.read()
             if frame is None:
@@ -54,6 +60,8 @@ class MotionDetector:
             self.detectMoves(new_frame, firstFrame, grayed)
             self.calculateStatusByTime(capture, grayed, times, statuses)
             self.drawContoursInFrame(new_frame, statuses)
+            # NOTIFICAR SI HAY UN EXCESO DE HORA => NOTIFICAR
+            self.activateAlarm(MotionDetector.TOLERANCIA)
 
             openCv.imshow(str(self.video), new_frame)
 
@@ -137,21 +145,24 @@ class MotionDetector:
                     
 
                     imageName=self.capturator.takePhoto(capture,notificacionFoto)
-                    self.register= Register(statuses[index],estacionamiento,imageName,dateText)
+                    momento= time.time()
+                    self.register= Register(statuses[index],estacionamiento,imageName,dateText,momento)
                     self.registers.append(self.register)
-                    self.activateAlarm()
+                    
                 continue
 
             if timesIsNone and self.status_changed(statuses, index, status):
                 times[index] = position_in_seconds
     
-    def activateAlarm(self):
+    def activateAlarm(self,tolerancia):
         for x in range(0,len(self.registers)):
             estadia= self.registers[x]
-            #print("")
-            #print(estadia.getPosition())
-            #print(estadia.getHour())
-            #print(estadia.getPathFoto())
+            ahora = time.time()
+            diferencia= int(ahora - estadia.getMomento())
+            if(diferencia>=tolerancia and diferencia<=(tolerancia+0.0001) and estadia.isEgreso1()):
+                print("diferencia: ",diferencia)
+                print("ALARMA!", estadia.getPosition())
+           
 
     def drawContoursInFrame(self, frame, statuses):
         for index, p in enumerate(self.coordinates_data):

@@ -1,11 +1,12 @@
 from datetime import datetime
 
 class Register:
-	def __init__(self, isEgreso, position, pathFoto, hourFoto):
+	def __init__(self, isEgreso, position, pathFoto, hourFoto, momento):
 		self.isEgreso = isEgreso
 		self.position = position
 		self.pathFoto = pathFoto
 		self.hourFoto = hourFoto
+		self.momento = momento
 
 	def getPosition(self):
  		return self.position
@@ -15,6 +16,12 @@ class Register:
 
 	def getPathFoto(self):
 		return self.pathFoto
+
+	def getMomento(self):
+		return self.momento
+
+	def isEgreso1(self):
+		return self.isEgreso
 
 
 # devolver un objeto que tenga la hora del egreso/ingreso "lugar, hora y foto(ruta)"
