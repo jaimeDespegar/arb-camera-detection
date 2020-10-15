@@ -24,10 +24,15 @@ def main():
     start_frame = int(config.getProp('start_frame'))
     folder_photos = config.getProp('folder_photos')
 
-    if image_file is not None:
-        with open(data_file, "w+") as points:
-            generator = CoordinatesGenerator(image_file, points, COLOR_RED)
-            generator.buildSpaces()
+    print("¿Quiere configurar los estacionemiento? Escriba si o no!")
+    desicion = input()
+    if (desicion == 'si'):
+        print(f"Usted decidió {desicion}")
+        drawCoordinates(image_file,data_file)
+    #if image_file is not None:
+    #    with open(data_file, "w+") as points:
+    #        generator = CoordinatesGenerator(image_file, points, COLOR_RED)
+    #        generator.buildSpaces()
 
     with open(data_file, "r") as data:
         points = yaml.load(data)
@@ -58,6 +63,11 @@ def get_video_homography():
     homography_video= Homography_video(puntos,frame) #nuevo
     homography_video.getHomography_video() #nuevo
 
+def drawCoordinates(image_file, data_file):
+    if image_file is not None:
+        with open(data_file, "w+") as points:
+            generator = CoordinatesGenerator(image_file, points, COLOR_RED)
+            generator.buildSpaces()
 
 if __name__ == '__main__':
     main()

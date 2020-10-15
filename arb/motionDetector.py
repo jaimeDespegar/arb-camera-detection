@@ -11,9 +11,11 @@ from datetime import datetime
 import time
 
 class MotionDetector:
-    LAPLACIAN = 2 #1.4
-    DETECT_DELAY = 3 #1
+    LAPLACIAN = 3 #1.4 SOMBRAS / superficies
+    DETECT_DELAY = 2 #1
     TOLERANCIA = 5 # ALARMA
+    UMBRAL_ORIGEN = 100 # 25 SOMBRAS
+
 
     def __init__(self, video, coordinates, start_frame, folder_photos):
         self.video = video
@@ -74,7 +76,7 @@ class MotionDetector:
 
     def detectMoves(self, frame, firstFrame, frameGray):
         frameDelta = openCv.absdiff(firstFrame, frameGray)
-        thresh = openCv.threshold(frameDelta, 25, 255, openCv.THRESH_BINARY)[1]
+        thresh = openCv.threshold(frameDelta, MotionDetector.UMBRAL_ORIGEN, 255, openCv.THRESH_BINARY)[1]
         thresh = openCv.dilate(thresh, None, iterations=2)
         contours = openCv.findContours(thresh.copy(), openCv.RETR_EXTERNAL, openCv.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(contours)
@@ -159,9 +161,10 @@ class MotionDetector:
             estadia= self.registers[x]
             ahora = time.time()
             diferencia= int(ahora - estadia.getMomento())
-            if(diferencia>=tolerancia and diferencia<=(tolerancia+0.0001) and estadia.isEgreso1()):
-                print("diferencia: ",diferencia)
+            if(diferencia==tolerancia and estadia.isEgreso1() and (not estadia.is_AlarmActive())):
+                estadia.set_ON_Alarm()
                 print("ALARMA!", estadia.getPosition())
+
            
 
     def drawContoursInFrame(self, frame, statuses):
