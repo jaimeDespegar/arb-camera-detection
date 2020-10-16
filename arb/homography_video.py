@@ -23,22 +23,13 @@ class Homography_video:
 		cv2.line(self.frame,tuple(self.puntos[1]),tuple(self.puntos[3]),(255,0,0),1)
 
 	def getHomography_video(self):
-		save_name = "../files/videos/homography.mp4"
 		imagen= cv2.imread('../files/images/homography.jpg') #nuevo
-		fps = 10
-		#imagen= self.escalarImagen(imagen)
-		#height, width = img.shape[0:2]
 		width = imagen.shape[1]; # columnas x
 		height = imagen.shape[0]; # filas y
-
-		output_size = (width, height)
-		out = cv2.VideoWriter(save_name,cv2.VideoWriter_fourcc('M','J','P','G'), fps , output_size )
-
-		##self.puntos = []
-		#cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+		
 		cap = cv2.VideoCapture('../files/videos/biciReal2.mp4')
-		cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
-		cv2.setMouseCallback('frame',self.clics)
+		#cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
+		#cv2.setMouseCallback('frame',self.clics)
 		print(self.puntos)
 
 		while True:
@@ -56,7 +47,6 @@ class Homography_video:
 				self.dst = cv2.warpPerspective(self.frame, M, (width,height))
 
 				cv2.imshow('dst', self.dst)
-				out.write(cv2.resize(self.dst, output_size ))
 				if cv2.waitKey(1) & 0xFF == ord('q'):
 					break
 			cv2.imshow('frame',self.frame)
@@ -68,20 +58,19 @@ class Homography_video:
 			elif k == 27:
 				break
 		cap.release()
-		out.release()
 		cv2.destroyAllWindows()
 		return self.dst
 
-	def escalarImagen(self,img):
-		#Indicamos la escala a la que se reducirá.... 1/scale
-		scale = 1
-		#Escalamos la imagen
-		img_rs = cv2.resize(img, None, fx=1./scale, fy=1./scale, interpolation=cv2.INTER_LANCZOS4)
-		print ("Tamaño de imagen: \nimg: ",img.shape," img_rs: ", img_rs.shape)
-		b,g,r = cv2.split(img_rs)
-		img_rs = cv2.merge([r,g,b])
-		plt.imshow(img_rs),plt.title('Original escalada')
-		return img_rs
+#	def escalarImagen(self,img):
+#		#Indicamos la escala a la que se reducirá.... 1/scale
+#		scale = 1
+#		#Escalamos la imagen
+#		img_rs = cv2.resize(img, None, fx=1./scale, fy=1./scale, interpolation=cv2.INTER_LANCZOS4)
+#		print ("Tamaño de imagen: \nimg: ",img.shape," img_rs: ", img_rs.shape)
+#		b,g,r = cv2.split(img_rs)
+#		img_rs = cv2.merge([r,g,b])
+#		plt.imshow(img_rs),plt.title('Original escalada')
+#		return img_rs
 
 #	def saveVideo():
 #		save_name = "homography.mp4"

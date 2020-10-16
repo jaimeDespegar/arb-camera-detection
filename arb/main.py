@@ -12,12 +12,7 @@ import cv2 as openCv #nuevo
 
 def main():
     logging.basicConfig(level=logging.INFO)
-    print("¿Quiere configurar con homografia el estacionemiento? Escriba si o no!")
-    decision1 = input()
-    if (decision1 == 'si'):
-        puntos = get_image_homography()
-        #get_video_homography(puntos) #nuevo
-    
+    puntosHomography = []
 
     config = FileReader(parse_args().config_file)
     
@@ -33,10 +28,16 @@ def main():
         print(f"Usted decidió {decision2}")
         drawCoordinates(image_file,data_file)
 
+    print("¿Quiere configurar con homografia el estacionemiento? Escriba si o no!")
+    decision1 = input()
+    if (decision1 == 'si'):
+        puntosHomography = get_image_homography()
+        #get_video_homography(puntos) #nuevo
+
     with open(data_file, "r") as data:
         points = yaml.load(data)
         detector = MotionDetector(video_file, points, int(start_frame), folder_photos)
-        detector.detect_motion()
+        detector.detect_motion(puntosHomography)
     #get_video_homography(puntos) #Corregir
 
 def parse_args():

@@ -14,7 +14,7 @@ from services.parkings import getParkings,putParkings,postParkings
 
 
 class MotionDetector:
-    LAPLACIAN = 2 #1.4 SOMBRAS / superficies
+    LAPLACIAN = 3 #1.4 SOMBRAS / superficies
     DETECT_DELAY = 2 #1
     TOLERANCIA = 5 # ALARMA
     UMBRAL_ORIGEN = 100 # 25 SOMBRAS
@@ -31,7 +31,7 @@ class MotionDetector:
         self.capturator = Capturator(folder_photos)
         self.registers = []
 
-    def detect_motion(self):
+    def detect_motion(self,puntosHomography):
         capture = openCv.VideoCapture(self.video)
         openCv.namedWindow('frame', openCv.WINDOW_NORMAL) #nuevo ajuste imagen
         capture.set(openCv.CAP_PROP_POS_FRAMES, self.start_frame)
@@ -69,6 +69,7 @@ class MotionDetector:
             # NOTIFICAR SI HAY UN EXCESO DE HORA => NOTIFICAR
             self.activateAlarm(MotionDetector.TOLERANCIA)
 
+            self.getVideoHomography(new_frame,puntosHomography)
             openCv.imshow(str(self.video), new_frame)
 
             k = openCv.waitKey(50) #10
@@ -77,6 +78,21 @@ class MotionDetector:
 
         capture.release()
         openCv.destroyAllWindows()
+
+    def getVideoHomography(self,frame,puntosHomography):
+        imagen= openCv.imread('../files/images/homography.jpg') #nuevo
+        width = imagen.shape[1]; # columnas x
+        height = imagen.shape[0]; # filas y
+
+        pts1 = np.float32([puntosHomography])
+        pts2 = np.float32([[0,0], [width,0], [0,height], [width,height]])
+
+        M = openCv.getPerspectiveTransform(pts1,pts2)
+        dst = openCv.warpPerspective(frame, M, (width,height))
+
+        openCv.imshow('dst', dst)
+             
+
 
     def detectMoves(self, frame, firstFrame, frameGray):
         frameDelta = openCv.absdiff(firstFrame, frameGray)
@@ -154,10 +170,10 @@ class MotionDetector:
                     momento= time.time()
                     self.register= Register(statuses[index],estacionamiento,imageName,dateText,momento)
                     self.registers.append(self.register)
-                    #servicio
-                    response= postParkings(self.registers)
-                    print("response:")
-                    print(response)
+                    ##servicio
+                    ##response= postParkings(self.registers)
+                    ##print("response:")
+                    ##print(response)
                     
                 continue
 
