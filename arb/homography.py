@@ -20,7 +20,7 @@ class Homography:
 
 	def escalarImagen(self,img):
 		#Indicamos la escala a la que se reducirá.... 1/scale
-		scale = 2
+		scale = 1
 		#Escalamos la imagen
 		img_rs = cv2.resize(img, None, fx=1./scale, fy=1./scale, interpolation=cv2.INTER_LANCZOS4)
 		print ("Tamaño de imagen: \nimg: ",img.shape," img_rs: ", img_rs.shape)
@@ -50,10 +50,10 @@ class Homography:
 				M = cv2.getPerspectiveTransform(pts1,pts2)
 				dst = cv2.warpPerspective(self.imagen, M, (cols,rows))
 
-				cv2.imshow('dst', dst)
+				#nocv2.imshow('dst', dst)
 
 				#Guardo la homografia
-				imageName = "../files/images/image_homography.jpg"
+				imageName = "../files/images/homography.jpg"
 				cv2.imwrite(imageName, dst)
 			cv2.imshow('Imagen',self.imagen)
 	
@@ -69,3 +69,6 @@ class Homography:
 
 		cv2.destroyAllWindows()
 		return dst
+
+	def getPuntos(self):
+		return self.puntos

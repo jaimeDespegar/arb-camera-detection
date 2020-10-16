@@ -9,12 +9,16 @@ from capturator import Capturator
 from register import Register
 from datetime import datetime
 import time
+from services.parkings import getParkings,putParkings,postParkings
+
+
 
 class MotionDetector:
-    LAPLACIAN = 3 #1.4 SOMBRAS / superficies
+    LAPLACIAN = 2 #1.4 SOMBRAS / superficies
     DETECT_DELAY = 2 #1
     TOLERANCIA = 5 # ALARMA
     UMBRAL_ORIGEN = 100 # 25 SOMBRAS
+    
 
 
     def __init__(self, video, coordinates, start_frame, folder_photos):
@@ -150,6 +154,10 @@ class MotionDetector:
                     momento= time.time()
                     self.register= Register(statuses[index],estacionamiento,imageName,dateText,momento)
                     self.registers.append(self.register)
+                    #servicio
+                    response= postParkings(self.registers)
+                    print("response:")
+                    print(response)
                     
                 continue
 
