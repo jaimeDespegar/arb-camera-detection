@@ -139,7 +139,7 @@ class MotionDetector:
     # ver nombre
     def calculateStatusByTime(self, capture, grayed, times, statuses):
         position_in_seconds = capture.get(openCv.CAP_PROP_POS_MSEC) / 1000.0
-
+        self.registers = []
         for index, itemData in enumerate(self.coordinates_data):
             status = self.apply(grayed, index, itemData)
             timesIsNone = times[index] is None
@@ -164,22 +164,20 @@ class MotionDetector:
                     else:
                         #print("Ingreso del estacionamiento: ",estacionamiento)
                         notificacionFoto= "Ingreso_del_estacionamiento:"+str(estacionamiento)+"__"+dateText
-                    
 
                     imageName=self.capturator.takePhoto(capture,notificacionFoto)
                     momento= time.time()
-                    self.register= Register(statuses[index],estacionamiento,imageName,dateText,momento)
-                    self.registers.append(self.register)
-                    ##servicio
-                    ##response= postParkings(self.registers)
-                    ##print("response:")
-                    ##print(response)
+                    register= Register(statuses[index],estacionamiento,imageName,dateText,momento)
+                    self.registers.append(register)
                     
                 continue
 
             if timesIsNone and self.status_changed(statuses, index, status):
                 times[index] = position_in_seconds
     
+        if (len(self.registers)>0):
+            postParkings(self.registers)
+
     def activateAlarm(self,tolerancia):
         for x in range(0,len(self.registers)):
             estadia= self.registers[x]

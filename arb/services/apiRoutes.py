@@ -1,1 +1,1 @@
-REGISTERS = '/registers'
+REGISTERS = '/move-create'

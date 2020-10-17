@@ -8,12 +8,10 @@ def postParkings(registers):
 	for parkingRegister in registers:
 		formattedRegisters.append(
 			{
-				"isEgreso": parkingRegister.isEgreso,
-				"position": parkingRegister.position,
-				"pathFoto": parkingRegister.pathFoto,
-				"hourFoto": parkingRegister.hourFoto,
-				"momento": parkingRegister.momento,
-				"isAlarmActive": parkingRegister.isAlarmActive
+				"occupied": bool(parkingRegister.isEgreso),
+				"placeNumber": parkingRegister.position,
+				"pathPhoto": parkingRegister.pathFoto,
+				"hourGenerated": parkingRegister.hourFoto
 			}	
 		)
 
@@ -21,7 +19,7 @@ def postParkings(registers):
 		"registers": formattedRegisters
 	}
 
-	return post(REGISTERS,data)
+	return post(REGISTERS, data)
 
 def getParkings():
 	response = get(REGISTERS)

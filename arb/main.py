@@ -22,15 +22,15 @@ def main():
     start_frame = int(config.getProp('start_frame'))
     folder_photos = config.getProp('folder_photos')
 
-    print("¿Quiere configurar los estacionemiento? Escriba si o no!")
+    print("¿Quiere configurar los estacionemiento? Escriba S/N!")
     decision2 = input()
-    if (decision2 == 'si'):
+    if (decision2.lower() == 's'):
         print(f"Usted decidió {decision2}")
         drawCoordinates(image_file,data_file)
 
-    print("¿Quiere configurar con homografia el estacionemiento? Escriba si o no!")
+    print("¿Quiere configurar con homografia el estacionemiento? Escriba S/N!")
     decision1 = input()
-    if (decision1 == 'si'):
+    if (decision1.lower() == 's'):
         puntosHomography = get_image_homography(image_file)
         #get_video_homography(puntos) #nuevo
 
