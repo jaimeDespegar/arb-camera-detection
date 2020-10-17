@@ -14,10 +14,10 @@ from services.parkings import getParkings,putParkings,postParkings
 
 
 class MotionDetector:
-    LAPLACIAN = 3 #1.4 SOMBRAS / superficies
-    DETECT_DELAY = 2 #1
+    LAPLACIAN = 1.4 #3 //1.4 SOMBRAS / superficies
+    DETECT_DELAY = 1 #2 //1
     TOLERANCIA = 5 # ALARMA
-    UMBRAL_ORIGEN = 100 # 25 SOMBRAS
+    UMBRAL_ORIGEN = 25 #100 // 25 SOMBRAS
     
 
 

@@ -31,7 +31,7 @@ def main():
     print("¿Quiere configurar con homografia el estacionemiento? Escriba si o no!")
     decision1 = input()
     if (decision1 == 'si'):
-        puntosHomography = get_image_homography()
+        puntosHomography = get_image_homography(image_file)
         #get_video_homography(puntos) #nuevo
 
     with open(data_file, "r") as data:
@@ -50,9 +50,10 @@ def parse_args():
 
     return parser.parse_args()
 
-def get_image_homography():
+def get_image_homography(image_file):
+    #image = openCv.imread(imageHomography).copy()
     puntos = [] #nuevo
-    imagen= openCv.imread('../files/images/biciReal2.jpg') #nuevo
+    imagen= openCv.imread(image_file)#('../files/images/biciReal2.jpg') #nuevo
     homography= Homography(puntos,imagen) #nuevo
     imagenH=homography.getHomography() #nuevo
     return homography.getPuntos()
