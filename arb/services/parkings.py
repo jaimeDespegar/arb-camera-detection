@@ -11,7 +11,7 @@ def postParkings(registers):
 				"occupied": bool(parkingRegister.isEgreso),
 				"placeNumber": parkingRegister.position,
 				"pathPhoto": parkingRegister.pathFoto,
-				"hourGenerated": parkingRegister.hourFoto
+				"createDate": parkingRegister.hourFoto
 			}	
 		)
 
