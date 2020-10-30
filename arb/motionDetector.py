@@ -11,14 +11,12 @@ from datetime import datetime
 import time
 from services.parkings import getParkings,putParkings,postParkings
 
-
-
 class MotionDetector:
-    LAPLACIAN = 1.4 #3 //1.4 SOMBRAS / superficies
-    DETECT_DELAY = 1 #2 //1
-    TOLERANCIA = 5 # ALARMA
-    UMBRAL_ORIGEN = 25 #100 // 25 SOMBRAS
-    
+    LAPLACIAN = 3 #(bici= 3) //(auto= 1.4) // sombras / superficies
+    DETECT_DELAY = 2 #(bici= 2) //(auto= 1) // retardos
+    TOLERANCIA = 5 # // alarma
+    UMBRAL_ORIGEN = 100 #(bici= 100) //(auto= 25) //sombras
+    SPEED= 50
 
 
     def __init__(self, video, coordinates, start_frame, folder_photos):
@@ -66,13 +64,11 @@ class MotionDetector:
             self.detectMoves(new_frame, firstFrame, grayed)
             self.calculateStatusByTime(capture, grayed, times, statuses)
             self.drawContoursInFrame(new_frame, statuses)
-            # NOTIFICAR SI HAY UN EXCESO DE HORA => NOTIFICAR
-            self.activateAlarm(MotionDetector.TOLERANCIA)
 
             self.getVideoHomography(new_frame,puntosHomography)
             openCv.imshow(str(self.video), new_frame)
 
-            k = openCv.waitKey(50) #10
+            k = openCv.waitKey(MotionDetector.SPEED)
             if k == KEY_QUIT:
                 break
 
@@ -139,7 +135,7 @@ class MotionDetector:
     # ver nombre
     def calculateStatusByTime(self, capture, grayed, times, statuses):
         position_in_seconds = capture.get(openCv.CAP_PROP_POS_MSEC) / 1000.0
-        self.registers = []
+        self.registers= []
         for index, itemData in enumerate(self.coordinates_data):
             status = self.apply(grayed, index, itemData)
             timesIsNone = times[index] is None
@@ -152,24 +148,23 @@ class MotionDetector:
                 if position_in_seconds - times[index] >= MotionDetector.DETECT_DELAY:
                     statuses[index] = status #true si está libre, false ocupado
                     times[index] = None
-                    #print("movimiento detectado!")
+                    
                     estacionamiento= index+1
                     notificacionFoto= ""
                     dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
 
                     if(statuses[index]):
-                        #print("Egreso del estacionamiento: ",estacionamiento)
                         notificacionFoto= "Egreso_del_estacionamiento:"+str(estacionamiento)+"__"+dateText
-                        #Activar Timer, si pasa X tiempo tirar otro print!
                     else:
-                        #print("Ingreso del estacionamiento: ",estacionamiento)
                         notificacionFoto= "Ingreso_del_estacionamiento:"+str(estacionamiento)+"__"+dateText
 
                     imageName=self.capturator.takePhoto(capture,notificacionFoto)
                     momento= time.time()
                     register= Register(statuses[index],estacionamiento,imageName,dateText,momento)
+                    
                     self.registers.append(register)
                     
+
                 continue
 
             if timesIsNone and self.status_changed(statuses, index, status):
@@ -178,15 +173,6 @@ class MotionDetector:
         if (len(self.registers)>0):
             postParkings(self.registers)
 
-    def activateAlarm(self,tolerancia):
-        for x in range(0,len(self.registers)):
-            estadia= self.registers[x]
-            ahora = time.time()
-            diferencia= int(ahora - estadia.getMomento())
-            if(diferencia==tolerancia and estadia.isEgreso1() and (not estadia.is_AlarmActive())):
-                estadia.set_ON_Alarm()
-                print("ALARMA!", estadia.getPosition())
-
            
 
     def drawContoursInFrame(self, frame, statuses):
@@ -194,8 +180,7 @@ class MotionDetector:
             coordinates = self._coordinates(p)
             color = COLOR_GREEN if statuses[index] else COLOR_BLUE
             draw_contours(frame, coordinates, str(p["id"] + 1), COLOR_WHITE, color)
-            #if(color == COLOR_BLUE):#es el color rojo!
-                #print("Ingreso :", str(p["id"] + 1))     
+   
 
     def apply(self, grayed, index, p):
         coordinates = self._coordinates(p)
