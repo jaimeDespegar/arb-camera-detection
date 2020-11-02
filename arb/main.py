@@ -8,6 +8,7 @@ import logging
 from homography import Homography #nuevo
 #from homography_video import Homography_video #nuevo
 import cv2 as openCv #nuevo
+from services.parkings import login
 
 
 def main():
@@ -36,7 +37,8 @@ def main():
 
     with open(data_file, "r") as data:
         points = yaml.load(data)
-        detector = MotionDetector(video_file, points, int(start_frame), folder_photos)
+        response = login().json()
+        detector = MotionDetector(video_file, points, int(start_frame), folder_photos, response['token'])
         detector.detect_motion(puntosHomography)
     #get_video_homography(puntos) #Corregir
 
@@ -51,19 +53,13 @@ def parse_args():
     return parser.parse_args()
 
 def get_image_homography(image_file):
-    #image = openCv.imread(imageHomography).copy()
+
     puntos = [] #nuevo
     imagen= openCv.imread(image_file)#('../files/images/biciReal2.jpg') #nuevo
     homography= Homography(puntos,imagen) #nuevo
     imagenH=homography.getHomography() #nuevo
     return homography.getPuntos()
 
-# def get_video_homography(puntos):
-#     #puntos = [] #nuevo
-#     cap = openCv.VideoCapture('../files/videos/biciReal2.mp4') #nuevo
-#     ret, frame = cap.read() #nuevo
-#     homography_video= Homography_video(puntos,frame) #nuevo
-#     homography_video.getHomography_video() #nuevo
 
 def drawCoordinates(image_file, data_file):
     if image_file is not None:

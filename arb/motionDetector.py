@@ -21,7 +21,7 @@ class MotionDetector:
     
 
 
-    def __init__(self, video, coordinates, start_frame, folder_photos):
+    def __init__(self, video, coordinates, start_frame, folder_photos, token):
         self.video = video
         self.coordinates_data = coordinates
         self.start_frame = start_frame
@@ -30,6 +30,7 @@ class MotionDetector:
         self.mask = []
         self.capturator = Capturator(folder_photos)
         self.registers = []
+        self.token = token
 
     def detect_motion(self,puntosHomography):
         capture = openCv.VideoCapture(self.video)
@@ -72,7 +73,7 @@ class MotionDetector:
             self.getVideoHomography(new_frame,puntosHomography)
             openCv.imshow(str(self.video), new_frame)
 
-            k = openCv.waitKey(50) #10
+            k = openCv.waitKey(10) #10
             if k == KEY_QUIT:
                 break
 
@@ -176,7 +177,7 @@ class MotionDetector:
                 times[index] = position_in_seconds
     
         if (len(self.registers)>0):
-            postParkings(self.registers)
+            postParkings(self.registers, self.token)
 
     def activateAlarm(self,tolerancia):
         for x in range(0,len(self.registers)):

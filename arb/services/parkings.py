@@ -1,9 +1,9 @@
 from .apiRoutes import REGISTERS
-from .api import get,post,put
+from .api import get,post,put,postLogin
 import json
 from register import Register
 
-def postParkings(registers):
+def postParkings(registers, token):
 	formattedRegisters = []
 	for parkingRegister in registers:
 		formattedRegisters.append(
@@ -12,14 +12,18 @@ def postParkings(registers):
 				"placeNumber": parkingRegister.position,
 				"pathPhoto": parkingRegister.pathFoto,
 				"createDate": parkingRegister.hourFoto
-			}	
+			}
 		)
 
 	data = {
 		"registers": formattedRegisters
 	}
 
-	return post(REGISTERS, data)
+	return post(REGISTERS, data, token)
+
+def login():
+    user = {'username': 'user_camera', 'password': 'camera12'}
+    return postLogin('/auth/login', user)
 
 def getParkings():
 	response = get(REGISTERS)
