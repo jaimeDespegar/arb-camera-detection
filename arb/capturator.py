@@ -5,15 +5,16 @@ class Capturator:
     
     def __init__(self, folderImages):
         self.folderImages = folderImages
+        self.folderWeb = 'assets/images/'
         
     def takePhoto(self, capture, description):
-        dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
         leido, frame = capture.read()
         imageName=""
         if leido == True:
-            imageName = self.folderImages + description+"_"+ dateText + ".jpg"
+            imageName = self.folderImages + description + ".jpg"
             openCv.imwrite(imageName, frame)
             print("Foto tomada correctamente")
         else:
             print("Error al acceder al contenido")
-        return imageName
+        #return imageName TODO ver este harcodeo , mobile ?
+        return self.folderWeb + description + ".jpg"

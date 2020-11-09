@@ -15,7 +15,7 @@ from services.parkings import getParkings,putParkings,postParkings
 
 class MotionDetector:
     LAPLACIAN = 3 #(bici= 3) //(auto= 1.4) // sombras / superficies
-    DETECT_DELAY = 2 #(bici= 2) //(auto= 1) // retardos
+    DETECT_DELAY = 1 #(bici= 2) //(auto= 1) // retardos
     TOLERANCIA = 5 # // alarma
     UMBRAL_ORIGEN = 100 #(bici= 100) //(auto= 25) //sombras
     SPEED= 50
@@ -153,13 +153,13 @@ class MotionDetector:
                     times[index] = None
                     
                     estacionamiento= index+1
-                    notificacionFoto= ""
+                    notificacionFoto= ''
                     dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
 
                     if(statuses[index]):
-                        notificacionFoto= "Egreso_del_estacionamiento:"+str(estacionamiento)+"__"+dateText
+                        notificacionFoto= "Egress_"+str(estacionamiento) + '_' + dateText
                     else:
-                        notificacionFoto= "Ingreso_del_estacionamiento:"+str(estacionamiento)+"__"+dateText
+                        notificacionFoto= 'Entrance_'+str(estacionamiento) + '_' + dateText
 
                     imageName=self.capturator.takePhoto(capture,notificacionFoto)
                     momento= time.time()

@@ -3,6 +3,7 @@ from utils.keys import KEY_PHOTO, KEY_QUIT
 import cv2 as openCv
 import argparse
 import sys
+from datetime import datetime
 
 
 def main():
@@ -16,9 +17,9 @@ def main():
         readed, frame = capture.read()
         openCv.imshow('frame', frame)#nuevo, ajusta el tamaño ventana
         key = openCv.waitKey(20)#20
-
+        dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
         if key == KEY_PHOTO:
-            capturator.takePhoto(capture)
+            capturator.takePhoto(capture, 'captura_' + dateText)
         if key == KEY_QUIT:
             break
 
