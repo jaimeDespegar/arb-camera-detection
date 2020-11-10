@@ -15,10 +15,10 @@ from services.parkings import getParkings,putParkings,postParkings
 
 class MotionDetector:
     LAPLACIAN = 3 #(bici= 3) //(auto= 1.4) // sombras / superficies
-    DETECT_DELAY = 1 #(bici= 2) //(auto= 1) // retardos
+    DETECT_DELAY = 2.5 #(bici= 2) //(auto= 1) // retardos
     TOLERANCIA = 5 # // alarma
-    UMBRAL_ORIGEN = 100 #(bici= 100) //(auto= 25) //sombras
-    SPEED= 50
+    UMBRAL_ORIGEN = 170 #(bici= 100) //(auto= 25) //sombras
+    SPEED= 20
 
 
     def __init__(self, video, coordinates, start_frame, folder_photos, token):
@@ -100,8 +100,9 @@ class MotionDetector:
         contours = openCv.findContours(thresh.copy(), openCv.RETR_EXTERNAL, openCv.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(contours)
 
+        #openCv.imshow('thresh',thresh)
         for c in contours:
-            if (openCv.contourArea(c) < 900):
+            if (openCv.contourArea(c) < 500):#900
                 continue
 
             (x, y, w, h) = openCv.boundingRect(c)
@@ -109,7 +110,8 @@ class MotionDetector:
                 openCv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
 
     def isDetectInAreaOK(self,x, y, w, h):
-        return (x > 30 and x < 600 and y > 100 and y < 600)
+        #return (x > 100 and x < 2000 and y > 100 and y < 2000)#(x > 30 and x < 600 and y > 100 and y < 600)
+        return True
 
     # ver nombre
     def calculateMask(self, coordinates_data):
