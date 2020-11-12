@@ -22,6 +22,7 @@ def main():
     data_file = config.getProp('data_file')
     start_frame = int(config.getProp('start_frame'))
     folder_photos = config.getProp('folder_photos')
+    folder_photos_mobile = config.getProp('folder_photos_mobile')
 
     print("¿Quiere configurar los estacionemiento? Escriba S/N!")
     decision2 = input()
@@ -38,7 +39,7 @@ def main():
     with open(data_file, "r") as data:
         points = yaml.load(data)
         response = login().json()
-        detector = MotionDetector(video_file, points, int(start_frame), folder_photos, response['token'])
+        detector = MotionDetector(video_file, points, int(start_frame), folder_photos, response['token'], folder_photos_mobile)
         detector.detect_motion(puntosHomography)
     #get_video_homography(puntos) #Corregir
 

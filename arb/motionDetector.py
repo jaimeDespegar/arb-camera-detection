@@ -19,9 +19,9 @@ class MotionDetector:
     TOLERANCIA = 5 # // alarma
     UMBRAL_ORIGEN = 170 #(bici= 100) //(auto= 25) //sombras
     SPEED= 20
+    FOTO_ESTADO_BICICLETERO = 5 #segundos
 
-
-    def __init__(self, video, coordinates, start_frame, folder_photos, token):
+    def __init__(self, video, coordinates, start_frame, folder_photos, token, folder_photos_mobile):
         self.video = video
         self.coordinates_data = coordinates
         self.start_frame = start_frame
@@ -31,6 +31,7 @@ class MotionDetector:
         self.capturator = Capturator(folder_photos)
         self.registers = []
         self.token = token
+        self.capturatorMobile = Capturator(folder_photos_mobile)
 
     def detect_motion(self,puntosHomography):
         capture = openCv.VideoCapture(self.video)
@@ -47,6 +48,7 @@ class MotionDetector:
         #nuevo
         comienzo = time.time() 
         print('COMIENZO:', comienzo)
+        count_AUX=1
         
         while capture.isOpened():
             result, frame = capture.read()
@@ -70,6 +72,12 @@ class MotionDetector:
 
             self.getVideoHomography(new_frame,puntosHomography)
             openCv.imshow(str(self.video), new_frame)
+
+            #FOTO DEL ESTADO DEL BICICLETERO
+            momento= time.time()
+            if((int(momento) - int(comienzo)) == (count_AUX*MotionDetector.FOTO_ESTADO_BICICLETERO)):
+                self.capturatorMobile.takePhotoStateBicycle(capture)
+                count_AUX= count_AUX+1
 
             k = openCv.waitKey(MotionDetector.SPEED)
             if k == KEY_QUIT:
