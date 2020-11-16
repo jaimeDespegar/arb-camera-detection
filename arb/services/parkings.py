@@ -22,7 +22,7 @@ def postParkings(registers, token):
 	return post(REGISTERS, data, token)
 
 def login():
-    user = {'username': 'user_camera', 'password': 'camera12'}
+    user = {'username': 'admin', 'password': 'admin'}
     return postLogin('/auth/login', user)
 
 def getParkings():
