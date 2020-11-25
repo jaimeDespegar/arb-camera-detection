@@ -10,7 +10,7 @@ from register import Register
 from datetime import datetime
 import time
 from services.parkings import getParkings,putParkings,postParkings
-
+from detector.detectorHelper import DetectorHelper
 
 
 class MotionDetector:
@@ -100,7 +100,6 @@ class MotionDetector:
         openCv.imshow('dst', dst)
              
 
-
     def detectMoves(self, frame, firstFrame, frameGray):
         frameDelta = openCv.absdiff(firstFrame, frameGray)
         thresh = openCv.threshold(frameDelta, MotionDetector.UMBRAL_ORIGEN, 255, openCv.THRESH_BINARY)[1]
@@ -124,7 +123,7 @@ class MotionDetector:
     # ver nombre
     def calculateMask(self, coordinates_data):
         for p in coordinates_data:
-            coordinates = self._coordinates(p)
+            coordinates = DetectorHelper._coordinates(p)
             rect = openCv.boundingRect(coordinates)
 
             new_coordinates = coordinates.copy()
@@ -153,11 +152,11 @@ class MotionDetector:
             status = self.apply(grayed, index, itemData)
             timesIsNone = times[index] is None
 
-            if not timesIsNone and self.same_status(statuses, index, status):
+            if not timesIsNone and DetectorHelper.same_status(statuses, index, status):
                 times[index] = None
                 continue
 
-            if not timesIsNone and self.status_changed(statuses, index, status):
+            if not timesIsNone and DetectorHelper.status_changed(statuses, index, status):
                 if position_in_seconds - times[index] >= MotionDetector.DETECT_DELAY:
                     statuses[index] = status #true si está libre, false ocupado
                     times[index] = None
@@ -180,24 +179,22 @@ class MotionDetector:
 
                 continue
 
-            if timesIsNone and self.status_changed(statuses, index, status):
+            if timesIsNone and DetectorHelper.status_changed(statuses, index, status):
                 times[index] = position_in_seconds
     
         if (len(self.registers)>0):
             postParkings(self.registers, self.token)
 
 
-           
-
     def drawContoursInFrame(self, frame, statuses):
         for index, p in enumerate(self.coordinates_data):
-            coordinates = self._coordinates(p)
+            coordinates = DetectorHelper._coordinates(p)
             color = COLOR_GREEN if statuses[index] else COLOR_BLUE
             draw_contours(frame, coordinates, str(p["id"] + 1), COLOR_WHITE, color)
    
 
     def apply(self, grayed, index, p):
-        coordinates = self._coordinates(p)
+        coordinates = DetectorHelper._coordinates(p)
         rect = self.bounds[index]
         roi_gray = grayed[rect[1]:(rect[1] + rect[3]), rect[0]:(rect[0] + rect[2])]
         laplacian = openCv.Laplacian(roi_gray, openCv.CV_64F)
@@ -206,18 +203,6 @@ class MotionDetector:
         coordinates[:, 1] = coordinates[:, 1] - rect[1]
 
         return np.mean(np.abs(laplacian * self.mask[index])) < MotionDetector.LAPLACIAN
-
-    @staticmethod
-    def _coordinates(data):
-        return np.array(data["coordinates"])
-
-    @staticmethod
-    def same_status(coordinates_status, index, status):
-        return status == coordinates_status[index]
-
-    @staticmethod
-    def status_changed(coordinates_status, index, status):
-        return status != coordinates_status[index]
 
 
 class CaptureReadError(Exception):
