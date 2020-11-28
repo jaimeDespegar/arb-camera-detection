@@ -22,12 +22,6 @@ def main():
     start_frame = int(config.getProp('start_frame'))
     folder_photos = config.getProp('folder_photos')
     folder_photos_mobile = config.getProp('folder_photos_mobile')
-
-    # print("¿Quiere configurar los estacionemiento? Escriba S/N!")
-    # decision2 = input()
-    # if (decision2.lower() == 's'):
-    #     print(f"Usted decidió {decision2}")
-    #     drawCoordinates(image_file,data_file)
     
     question1 = "¿Quiere configurar los estacionemiento? Escriba S/N!"
     if (QuestionInput.realize(question1)):
