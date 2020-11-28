@@ -26,9 +26,10 @@ def main():
 
     print("¿Quiere configurar los estacionemiento? Escriba S/N!")
     decision2 = input()
+    response = login().json()
     if (decision2.lower() == 's'):
         print(f"Usted decidió {decision2}")
-        drawCoordinates(image_file,data_file)
+        drawCoordinates(image_file,data_file,response['token'])
 
     print("¿Quiere configurar con homografia el estacionemiento? Escriba S/N!")
     decision1 = input()
@@ -38,7 +39,7 @@ def main():
 
     with open(data_file, "r") as data:
         points = yaml.load(data)
-        response = login().json()
+        #response = login().json()
         detector = MotionDetector(video_file, points, int(start_frame), folder_photos, response['token'], folder_photos_mobile)
         detector.detect_motion(puntosHomography)
     #get_video_homography(puntos) #Corregir
@@ -62,10 +63,11 @@ def get_image_homography(image_file):
     return homography.getPuntos()
 
 
-def drawCoordinates(image_file, data_file):
+def drawCoordinates(image_file, data_file, token):
     if image_file is not None:
         with open(data_file, "w+") as points:
-            generator = CoordinatesGenerator(image_file, points, COLOR_RED)
+            generator = CoordinatesGenerator(image_file, points, COLOR_RED, token)
+            generator.createBicycleParking(token)
             generator.buildSpaces()
 
 if __name__ == '__main__':
