@@ -4,11 +4,11 @@ from utils.keys import KEY_PHOTO, KEY_QUIT
 from utils.colors import COLOR_WHITE, COLOR_RED
 from drawingUtils import DrawingUtils
 from homography import Homography
-
+from services.parkings import postBicycleParkings,postPlace
 
 class CoordinatesGenerator:
 
-    def __init__(self, imageHomography, output, color):
+    def __init__(self, imageHomography, output, color, token):
         self.output = output
         self.caption = imageHomography
         self.color = color
@@ -18,6 +18,7 @@ class CoordinatesGenerator:
         self.coordinates = []
         self.thickness = 1
         self.drawingUtils = DrawingUtils()
+        self.token= token
         openCv.namedWindow(self.caption, openCv.WINDOW_GUI_EXPANDED)
         openCv.setMouseCallback(self.caption, self.drawRectangle)
 
@@ -58,6 +59,8 @@ class CoordinatesGenerator:
 
         self.drawingUtils.draw_contours(self.image, coordinates, str(self.ids + 1), COLOR_WHITE)
 
+        postPlace(self.token, self.ids + 1)
+
         for i in range(0, 4):
             self.coordinates.pop()
 
@@ -70,3 +73,6 @@ class CoordinatesGenerator:
                           "[" + str(self.coordinates[1][0]) + "," + str(self.coordinates[1][1]) + "]," +
                           "[" + str(self.coordinates[2][0]) + "," + str(self.coordinates[2][1]) + "]," +
                           "[" + str(self.coordinates[3][0]) + "," + str(self.coordinates[3][1]) + "]]\n")
+
+    def createBicycleParking(self,token):
+        postBicycleParkings(token)

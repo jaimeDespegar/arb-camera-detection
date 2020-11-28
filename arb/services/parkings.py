@@ -1,4 +1,4 @@
-from .apiRoutes import REGISTERS
+from .apiRoutes import REGISTERS, BICYCLEPARKING, PLACE
 from .api import get,post,put,postLogin
 import json
 from register import Register
@@ -22,7 +22,7 @@ def postParkings(registers, token):
 	return post(REGISTERS, data, token)
 
 def login():
-    user = {'username': 'admin', 'password': 'admin'}
+    user = {'username': 'user_camera', 'password': 'camera12'}
     return postLogin('/auth/login', user)
 
 def getParkings():
@@ -56,3 +56,18 @@ def putParkings(registers):
 	}
 
 	return put(PARKINGS,data)
+
+def postBicycleParkings(token):
+	data = {
+		"number": 0,
+		"description": "origen",
+		"positionX": 10,
+		"positionY": 20
+	}
+
+	return post(BICYCLEPARKING, data, token)
+
+def postPlace(token, idPlace):
+	data = idPlace
+
+	return post(PLACE, data, token)
