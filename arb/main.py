@@ -5,11 +5,10 @@ from motionDetector import MotionDetector
 from utils.fileReader import FileReader
 from utils.colors import *
 import logging
-from homography import Homography #nuevo
-#from homography_video import Homography_video #nuevo
-import cv2 as openCv #nuevo
+from homography import Homography
+import cv2 as openCv
 from services.parkings import login
-
+from utils.questionInput import QuestionInput
 
 def main():
     logging.basicConfig(level=logging.INFO)
@@ -24,18 +23,20 @@ def main():
     folder_photos = config.getProp('folder_photos')
     folder_photos_mobile = config.getProp('folder_photos_mobile')
 
-    print("¿Quiere configurar los estacionemiento? Escriba S/N!")
-    decision2 = input()
-    if (decision2.lower() == 's'):
-        print(f"Usted decidió {decision2}")
-        drawCoordinates(image_file,data_file)
+    # print("¿Quiere configurar los estacionemiento? Escriba S/N!")
+    # decision2 = input()
+    # if (decision2.lower() == 's'):
+    #     print(f"Usted decidió {decision2}")
+    #     drawCoordinates(image_file,data_file)
+    
+    question1 = "¿Quiere configurar los estacionemiento? Escriba S/N!"
+    if (QuestionInput.realize(question1)):
+        drawCoordinates(image_file, data_file)
 
-    print("¿Quiere configurar con homografia el estacionemiento? Escriba S/N!")
-    decision1 = input()
-    if (decision1.lower() == 's'):
+    question2 = "¿Quiere configurar con homografia el estacionemiento? Escriba S/N!"
+    if (QuestionInput.realize(question2)):
         puntosHomography = get_image_homography(image_file)
-        #get_video_homography(puntos) #nuevo
-
+        
     with open(data_file, "r") as data:
         points = yaml.load(data)
         response = login().json()
@@ -54,11 +55,10 @@ def parse_args():
     return parser.parse_args()
 
 def get_image_homography(image_file):
-
-    puntos = [] #nuevo
-    imagen= openCv.imread(image_file)#('../files/images/biciReal2.jpg') #nuevo
-    homography= Homography(puntos,imagen) #nuevo
-    imagenH=homography.getHomography() #nuevo
+    puntos = []
+    imagen= openCv.imread(image_file)
+    homography= Homography(puntos,imagen) 
+    imagenH=homography.getHomography()
     return homography.getPuntos()
 
 

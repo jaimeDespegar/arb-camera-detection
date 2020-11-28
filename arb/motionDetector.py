@@ -15,7 +15,7 @@ from homography import Homography
 
 
 class MotionDetector:
-    LAPLACIAN = 3 #(bici= 3) //(auto= 1.4) // sombras / superficies
+    
     DETECT_DELAY = 2.5 #(bici= 2) //(auto= 1) // retardos
     TOLERANCIA = 5 # // alarma
     UMBRAL_ORIGEN = 170 #(bici= 100) //(auto= 25) //sombras
@@ -28,7 +28,7 @@ class MotionDetector:
         self.start_frame = start_frame
         self.contours = []
         self.bounds = []
-        self.mask = []
+        self.masks = []
         self.capturator = Capturator(folder_photos)
         self.registers = []
         self.token = token
@@ -41,7 +41,7 @@ class MotionDetector:
         capture.set(openCv.CAP_PROP_POS_FRAMES, self.start_frame)
         coordinates_data = self.coordinates_data
 
-        self.calculateMask(coordinates_data)
+        DetectorHelper.calculateMask(coordinates_data, self.contours, self.bounds, self.masks)
 
         statuses = [True] * len(coordinates_data)
         times = [None] * len(coordinates_data)
@@ -107,35 +107,11 @@ class MotionDetector:
         return True
 
     # ver nombre
-    def calculateMask(self, coordinates_data):
-        for p in coordinates_data:
-            coordinates = DetectorHelper._coordinates(p)
-            rect = openCv.boundingRect(coordinates)
-
-            new_coordinates = coordinates.copy()
-            new_coordinates[:, 0] = coordinates[:, 0] - rect[0]
-            new_coordinates[:, 1] = coordinates[:, 1] - rect[1]
-
-            self.contours.append(coordinates)
-            self.bounds.append(rect)
-
-            mask = openCv.drawContours(
-                np.zeros((rect[3], rect[2]), dtype=np.uint8),
-                [new_coordinates],
-                contourIdx=-1,
-                color=255,
-                thickness=-1,
-                lineType=openCv.LINE_8)
-
-            mask = mask == 255
-            self.mask.append(mask)
-
-    # ver nombre
     def calculateStatusByTime(self, capture, grayed, times, statuses):
         position_in_seconds = capture.get(openCv.CAP_PROP_POS_MSEC) / 1000.0
         self.registers = []
         for index, itemData in enumerate(self.coordinates_data):
-            status = self.apply(grayed, index, itemData)
+            status = DetectorHelper.evaluate(grayed, index, itemData, self.bounds, self.masks)
             timesIsNone = times[index] is None
 
             if not timesIsNone and DetectorHelper.same_status(statuses, index, status):
@@ -169,18 +145,6 @@ class MotionDetector:
     
         if (len(self.registers)>0):
             postParkings(self.registers, self.token)
-
-    def apply(self, grayed, index, p):
-        coordinates = DetectorHelper._coordinates(p)
-        rect = self.bounds[index]
-        roi_gray = grayed[rect[1]:(rect[1] + rect[3]), rect[0]:(rect[0] + rect[2])]
-        laplacian = openCv.Laplacian(roi_gray, openCv.CV_64F)
-
-        coordinates[:, 0] = coordinates[:, 0] - rect[0]
-        coordinates[:, 1] = coordinates[:, 1] - rect[1]
-
-        return np.mean(np.abs(laplacian * self.mask[index])) < MotionDetector.LAPLACIAN
-
 
 class CaptureReadError(Exception):
     pass
