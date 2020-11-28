@@ -12,9 +12,7 @@ class CoordinatesGenerator:
         self.output = output
         self.caption = imageHomography
         self.color = color
-
-        self.image = openCv.imread(imageHomography).copy() #original
-        #self.image= imageHomography.copy() #nuevo
+        self.image = openCv.imread(imageHomography).copy()
         self.click_count = 0
         self.ids = 0
         self.coordinates = []
