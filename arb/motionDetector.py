@@ -2,15 +2,16 @@ import cv2 as openCv
 import numpy as np
 import logging
 import imutils
-from drawingUtils import draw_contours
-from utils.colors import COLOR_GREEN, COLOR_WHITE, COLOR_BLUE, COLOR_RED
+import time
+from utils.colors import COLOR_WHITE
 from utils.keys import KEY_QUIT
 from capturator import Capturator
 from register import Register
 from datetime import datetime
-import time
 from services.parkings import getParkings,putParkings,postParkings
 from detector.detectorHelper import DetectorHelper
+from drawingUtils import DrawingUtils
+from homography import Homography
 
 
 class MotionDetector:
@@ -32,6 +33,7 @@ class MotionDetector:
         self.registers = []
         self.token = token
         self.capturatorMobile = Capturator(folder_photos_mobile)
+        self.drawingUtils = DrawingUtils()        
 
     def detect_motion(self,puntosHomography):
         capture = openCv.VideoCapture(self.video)
@@ -46,8 +48,7 @@ class MotionDetector:
         firstFrame = None
         
         #nuevo
-        comienzo = time.time() 
-        print('COMIENZO:', comienzo)
+        comienzo = time.time()
         count_AUX=1
         
         while capture.isOpened():
@@ -68,13 +69,13 @@ class MotionDetector:
 
             self.detectMoves(new_frame, firstFrame, grayed)
             self.calculateStatusByTime(capture, grayed, times, statuses)
-            self.drawContoursInFrame(new_frame, statuses)
+            self.drawingUtils.drawContoursInFrame(new_frame, statuses, self.coordinates_data)
 
-            self.getVideoHomography(new_frame,puntosHomography)
+            Homography.getVideoHomography(new_frame, puntosHomography)
             openCv.imshow(str(self.video), new_frame)
 
             #FOTO DEL ESTADO DEL BICICLETERO
-            momento= time.time()
+            momento = time.time()
             if((int(momento) - int(comienzo)) == (count_AUX*MotionDetector.FOTO_ESTADO_BICICLETERO)):
                 self.capturatorMobile.takePhotoStateBicycle(capture)
                 count_AUX= count_AUX+1
@@ -84,21 +85,7 @@ class MotionDetector:
                 break
 
         capture.release()
-        openCv.destroyAllWindows()
-
-    def getVideoHomography(self,frame,puntosHomography):
-        imagen= openCv.imread('../files/images/homography.jpg') #nuevo
-        width = imagen.shape[1]; # columnas x
-        height = imagen.shape[0]; # filas y
-
-        pts1 = np.float32([puntosHomography])
-        pts2 = np.float32([[0,0], [width,0], [0,height], [width,height]])
-
-        M = openCv.getPerspectiveTransform(pts1,pts2)
-        dst = openCv.warpPerspective(frame, M, (width,height))
-
-        openCv.imshow('dst', dst)
-             
+        openCv.destroyAllWindows()             
 
     def detectMoves(self, frame, firstFrame, frameGray):
         frameDelta = openCv.absdiff(firstFrame, frameGray)
@@ -107,9 +94,8 @@ class MotionDetector:
         contours = openCv.findContours(thresh.copy(), openCv.RETR_EXTERNAL, openCv.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(contours)
 
-        #openCv.imshow('thresh',thresh)
         for c in contours:
-            if (openCv.contourArea(c) < 500):#900
+            if (openCv.contourArea(c) < 500):
                 continue
 
             (x, y, w, h) = openCv.boundingRect(c)
@@ -142,7 +128,7 @@ class MotionDetector:
                 lineType=openCv.LINE_8)
 
             mask = mask == 255
-            self.mask.append(mask)        
+            self.mask.append(mask)
 
     # ver nombre
     def calculateStatusByTime(self, capture, grayed, times, statuses):
@@ -161,14 +147,14 @@ class MotionDetector:
                     statuses[index] = status #true si está libre, false ocupado
                     times[index] = None
                     
-                    estacionamiento= index+1
-                    notificacionFoto= ''
+                    estacionamiento = index+1
+                    notificacionFoto = ''
                     dateText = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
 
                     if(statuses[index]):
-                        notificacionFoto= "Egress_"+str(estacionamiento) + '_' + dateText
+                        notificacionFoto = "Egress_"+str(estacionamiento) + '_' + dateText
                     else:
-                        notificacionFoto= 'Entrance_'+str(estacionamiento) + '_' + dateText
+                        notificacionFoto = 'Entrance_'+str(estacionamiento) + '_' + dateText
 
                     imageName=self.capturator.takePhoto(capture,notificacionFoto)
                     momento= time.time()
@@ -176,7 +162,6 @@ class MotionDetector:
                     
                     self.registers.append(register)
                     
-
                 continue
 
             if timesIsNone and DetectorHelper.status_changed(statuses, index, status):
@@ -184,14 +169,6 @@ class MotionDetector:
     
         if (len(self.registers)>0):
             postParkings(self.registers, self.token)
-
-
-    def drawContoursInFrame(self, frame, statuses):
-        for index, p in enumerate(self.coordinates_data):
-            coordinates = DetectorHelper._coordinates(p)
-            color = COLOR_GREEN if statuses[index] else COLOR_BLUE
-            draw_contours(frame, coordinates, str(p["id"] + 1), COLOR_WHITE, color)
-   
 
     def apply(self, grayed, index, p):
         coordinates = DetectorHelper._coordinates(p)

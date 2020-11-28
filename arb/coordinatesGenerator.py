@@ -2,8 +2,8 @@ import cv2 as openCv
 import numpy as np
 from utils.keys import KEY_PHOTO, KEY_QUIT
 from utils.colors import COLOR_WHITE, COLOR_RED
-from drawingUtils import draw_contours
-from homography import Homography #nuevo
+from drawingUtils import DrawingUtils
+from homography import Homography
 
 
 class CoordinatesGenerator:
@@ -19,7 +19,7 @@ class CoordinatesGenerator:
         self.ids = 0
         self.coordinates = []
         self.thickness = 1
-
+        self.drawingUtils = DrawingUtils()
         openCv.namedWindow(self.caption, openCv.WINDOW_GUI_EXPANDED)
         openCv.setMouseCallback(self.caption, self.drawRectangle)
 
@@ -58,7 +58,7 @@ class CoordinatesGenerator:
         self.click_count = 0
         self.writeCoordinateInFileData()
 
-        draw_contours(self.image, coordinates, str(self.ids + 1), COLOR_WHITE)
+        self.drawingUtils.draw_contours(self.image, coordinates, str(self.ids + 1), COLOR_WHITE)
 
         for i in range(0, 4):
             self.coordinates.pop()
