@@ -27,15 +27,13 @@ def login():
 
 def getParkings():
 	response = get(REGISTERS)
-        # print("Response: %s"%response)
 	response = json.loads(response.content)
-        # print("Json Response: %s"%response)
 	registers = []
 	for parkingRegister in response:
 		parkingRegister_new = Parking(parkingRegister['isEgreso'],parkingRegister['position'],
 			parkingRegister['pathFoto'],parkingRegister['hourFoto'],parkingRegister['momento'])
 		parkingRegister_new.id = parkingRegister['id']
-		registers.append(parking_new)
+		registers.append(parkingRegister_new)
 	return registers
 
 
@@ -48,8 +46,7 @@ def putParkings(registers):
 				"position": parkingRegister.position,
 				"pathFoto": parkingRegister.pathFoto,
 				"hourFoto": parkingRegister.hourFoto,
-				"momento": parkingRegister.momento,
-				"isAlarmActive": parkingRegister.isAlarmActive
+				"momento": parkingRegister.momento
 			}
 			
 		formattedParkings.append(new_park)
