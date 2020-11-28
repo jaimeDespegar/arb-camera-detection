@@ -2,8 +2,8 @@ import cv2 as openCv
 import numpy as np
 from utils.keys import KEY_PHOTO, KEY_QUIT
 from utils.colors import COLOR_WHITE, COLOR_RED
-from drawingUtils import draw_contours
-from homography import Homography #nuevo
+from drawingUtils import DrawingUtils
+from homography import Homography
 from services.parkings import postBicycleParkings,postPlace
 
 class CoordinatesGenerator:
@@ -12,17 +12,13 @@ class CoordinatesGenerator:
         self.output = output
         self.caption = imageHomography
         self.color = color
-
-        self.image = openCv.imread(imageHomography).copy() #original
-        #self.image= imageHomography.copy() #nuevo
+        self.image = openCv.imread(imageHomography).copy()
         self.click_count = 0
         self.ids = 0
         self.coordinates = []
         self.thickness = 1
-
+        self.drawingUtils = DrawingUtils()
         self.token= token
-
-
         openCv.namedWindow(self.caption, openCv.WINDOW_GUI_EXPANDED)
         openCv.setMouseCallback(self.caption, self.drawRectangle)
 
@@ -61,7 +57,7 @@ class CoordinatesGenerator:
         self.click_count = 0
         self.writeCoordinateInFileData()
 
-        draw_contours(self.image, coordinates, str(self.ids + 1), COLOR_WHITE)
+        self.drawingUtils.draw_contours(self.image, coordinates, str(self.ids + 1), COLOR_WHITE)
 
         postPlace(self.token, self.ids + 1)
 
