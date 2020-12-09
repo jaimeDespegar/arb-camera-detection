@@ -1,5 +1,5 @@
-from .apiRoutes import REGISTERS, BICYCLEPARKING, PLACE
-from .api import get,post,put,postLogin
+from .apiRoutes import REGISTERS, BICYCLEPARKING, PLACE, BICYCLEPARKINGALL
+from .api import get,post,put,postLogin,getBicycleParkings
 import json
 from register import Register
 
@@ -34,6 +34,22 @@ def getParkings():
 			parkingRegister['pathFoto'],parkingRegister['hourFoto'],parkingRegister['momento'])
 		parkingRegister_new.id = parkingRegister['id']
 		registers.append(parkingRegister_new)
+	return registers
+
+def getAllBicycleParkings(token):
+	response = getBicycleParkings(BICYCLEPARKINGALL,token)
+	response = json.loads(response.content)
+	registers = []
+	for parkingRegister in response:
+		parkingRegister_new = {
+				"id": parkingRegister['id'],
+				"description": parkingRegister['description'],
+				"number": parkingRegister['number'],
+				"positionX": parkingRegister['positionX'],
+				"positionY": parkingRegister['positionY'],
+			}
+		registers.append(parkingRegister_new)
+		print("Bicicletero: ",parkingRegister['number']," - descripción: ",parkingRegister['description'])
 	return registers
 
 

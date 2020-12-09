@@ -7,7 +7,7 @@ from utils.colors import *
 import logging
 from homography import Homography
 import cv2 as openCv
-from services.parkings import login
+from services.parkings import login, getAllBicycleParkings
 from utils.questionInput import QuestionInput
 
 def main():
@@ -27,6 +27,13 @@ def main():
     question1 = "¿Quiere configurar los estacionemiento? Escriba S/N!"
     if (QuestionInput.realize(question1)):
         drawCoordinates(image_file, data_file, response['token'])
+    else:
+        print("Bicicleteros:")
+        res=getAllBicycleParkings(response['token'])
+        question1_2 = "Elija un número de bicicletero existente:"
+        if (QuestionInput.realizeNumberBicycle(question1_2)==1):
+            data_file = config.getProp('cache_data_file')
+
 
     question2 = "¿Quiere configurar con homografia el estacionemiento? Escriba S/N!"
     if (QuestionInput.realize(question2)):
