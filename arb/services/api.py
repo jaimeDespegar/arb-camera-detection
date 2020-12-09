@@ -11,6 +11,13 @@ headers = {
 def get(resource):
 	return requests.get("{}{}".format(url,resource), headers=headers)
 
+def getBicycleParkings(resource,token):
+	headers2 = {
+    "Content-Type": "application/json",
+	"Authorization": "Token " + token
+    }
+	return requests.get("{}{}".format(url,resource), headers=headers2)
+
 #para crear bicicleteros
 def post(resource, data, token):
     headers2 = {

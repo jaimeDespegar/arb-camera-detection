@@ -16,11 +16,13 @@ from homography import Homography
 
 class MotionDetector:
     
-    DETECT_DELAY = 2.5 #(bici= 2) //(auto= 1) // retardos
+    DETECT_DELAY = 4 #(bici= 2) //(auto= 1) // retardos
     TOLERANCIA = 5 # // alarma
-    UMBRAL_ORIGEN = 170 #(bici= 100) //(auto= 25) //sombras
+    UMBRAL_ORIGEN = 100 #150(bici= 100) //(auto= 25) //sombras
     SPEED= 20
     FOTO_ESTADO_BICICLETERO = 5 #segundos
+
+
 
     def __init__(self, video, coordinates, start_frame, folder_photos, token, folder_photos_mobile):
         self.video = video
@@ -50,6 +52,10 @@ class MotionDetector:
         #nuevo
         comienzo = time.time()
         count_AUX=1
+
+        # Agregar deteccion de bicicletas
+        #bicycleClassif = openCv.CascadeClassifier('body.xml')
+
         
         while capture.isOpened():
             result, frame = capture.read()
@@ -71,6 +77,20 @@ class MotionDetector:
             self.calculateStatusByTime(capture, grayed, times, statuses)
             self.drawingUtils.drawContoursInFrame(new_frame, statuses, self.coordinates_data)
 
+            # Agregar deteccion de bicicletas
+            #bicycle = bicycleClassif.detectMultiScale(grayed,
+            #scaleFactor = 1.1,#1.1
+            #minNeighbors = 91,
+            #minSize=(50,90)
+            #)
+
+            #for (x,y,w,h) in bicycle:
+            #    openCv.rectangle(new_frame, (x,y),(x+w,y+h),(0,128,255),2)
+            #    openCv.putText(new_frame,'Ciclista',(x,y-10),2,0.7,(0,128,255),2,openCv.LINE_AA)
+
+
+
+
             Homography.getVideoHomography(new_frame, puntosHomography)
             openCv.imshow(str(self.video), new_frame)
 
@@ -88,23 +108,33 @@ class MotionDetector:
         openCv.destroyAllWindows()             
 
     def detectMoves(self, frame, firstFrame, frameGray):
-        frameDelta = openCv.absdiff(firstFrame, frameGray)
+        kernel = openCv.getStructuringElement(openCv.MORPH_ELLIPSE,(3,3))
+        #Para disminuir el ruido y mejorar la imagen binaria
+        fgmask = openCv.morphologyEx(frameGray, openCv.MORPH_OPEN,kernel)
+
+        frameDelta = openCv.absdiff(firstFrame, fgmask)#frameGray
         thresh = openCv.threshold(frameDelta, MotionDetector.UMBRAL_ORIGEN, 255, openCv.THRESH_BINARY)[1]
         thresh = openCv.dilate(thresh, None, iterations=2)
+        openCv.imshow('thresh',thresh)
         contours = openCv.findContours(thresh.copy(), openCv.RETR_EXTERNAL, openCv.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(contours)
 
-        for c in contours:
-            if (openCv.contourArea(c) < 500):
-                continue
 
-            (x, y, w, h) = openCv.boundingRect(c)
-            if(self.isDetectInAreaOK(x, y, w, h)):
-                openCv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
+        for c in contours:
+            if ((openCv.contourArea(c)) > 1200  ):#and (openCv.contourArea(c)) < 3000
+                (x, y, w, h) = openCv.boundingRect(c)
+                if(self.isDetectInAreaOK(x, y, w, h)):
+                    openCv.rectangle(frame, (x, y), (x + w, y + h), COLOR_WHITE, 2)
+                    openCv.putText(frame,'Bicicleta',(x,y-10),2,0.7,(0,128,255),2,openCv.LINE_AA)
+
+            
+
+        
+
 
     def isDetectInAreaOK(self,x, y, w, h):
-        #return (x > 100 and x < 2000 and y > 100 and y < 2000)#(x > 30 and x < 600 and y > 100 and y < 600)
-        return True
+        return (x > 50 and x < 430 and y > 185 and y < 310)#(x > 30 and x < 600 and y > 100 and y < 600)
+        #return True
 
     # ver nombre
     def calculateStatusByTime(self, capture, grayed, times, statuses):
