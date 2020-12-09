@@ -1,5 +1,7 @@
 import cv2 as openCv
 from datetime import datetime
+from utils.imageParser import ImageParser
+
 
 class Capturator:
     
@@ -18,7 +20,12 @@ class Capturator:
         else:
             print("Error al acceder al contenido")
         #return imageName TODO ver este harcodeo , mobile ?
-        return self.folderWeb + description + ".jpg"
+        imageInBase64 = ImageParser.parseToBase64(frame)
+        response = {
+            "path": self.folderWeb + description + ".jpg",
+            "imageBase64": imageInBase64          
+        }
+        return response
 
     def takePhotoStateBicycle(self, capture):
         leido, frame = capture.read()

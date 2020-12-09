@@ -11,7 +11,8 @@ def postParkings(registers, token):
 				"occupied": bool(parkingRegister.isEgreso),
 				"placeNumber": parkingRegister.position,
 				"pathPhoto": parkingRegister.pathFoto,
-				"createDate": parkingRegister.hourFoto
+				"createDate": parkingRegister.hourFoto,
+    			"photoInBase64": parkingRegister.imgBase64
 			}
 		)
 
@@ -22,7 +23,7 @@ def postParkings(registers, token):
 	return post(REGISTERS, data, token)
 
 def login():
-    user = {'username': 'user_camera', 'password': 'camera12'}
+    user = {'username': 'admin', 'password': 'admin'}
     return postLogin('/auth/login', user)
 
 def getParkings():
@@ -31,7 +32,7 @@ def getParkings():
 	registers = []
 	for parkingRegister in response:
 		parkingRegister_new = Parking(parkingRegister['isEgreso'],parkingRegister['position'],
-			parkingRegister['pathFoto'],parkingRegister['hourFoto'],parkingRegister['momento'])
+			parkingRegister['pathFoto'],parkingRegister['hourFoto'],parkingRegister['imgBase64'])
 		parkingRegister_new.id = parkingRegister['id']
 		registers.append(parkingRegister_new)
 	return registers
@@ -46,7 +47,7 @@ def putParkings(registers):
 				"position": parkingRegister.position,
 				"pathFoto": parkingRegister.pathFoto,
 				"hourFoto": parkingRegister.hourFoto,
-				"momento": parkingRegister.momento
+			    "photoInBase64": parkingRegister.imgBase64
 			}
 			
 		formattedParkings.append(new_park)
