@@ -16,7 +16,7 @@ from homography import Homography
 
 class MotionDetector:
     
-    DETECT_DELAY = 4 #(bici= 2) //(auto= 1) // retardos
+    DETECT_DELAY = 2 #(bici= 2) //(auto= 1) // retardos
     TOLERANCIA = 5 # // alarma
     UMBRAL_ORIGEN = 100 #150(bici= 100) //(auto= 25) //sombras
     SPEED= 20
