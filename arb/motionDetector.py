@@ -162,9 +162,10 @@ class MotionDetector:
                     else:
                         notificacionFoto = 'Entrance_'+str(estacionamiento) + '_' + dateText
 
-                    imageName=self.capturator.takePhoto(capture,notificacionFoto)
+                    photo = self.capturator.takePhoto(capture,notificacionFoto)
+                    imageName = photo['path']
                     momento= time.time()
-                    register= Register(statuses[index],estacionamiento,imageName,dateText,momento)
+                    register= Register(statuses[index], estacionamiento, imageName, dateText, momento, photo['imageBase64'])
                     
                     self.registers.append(register)
                     

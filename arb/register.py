@@ -1,12 +1,13 @@
 from datetime import datetime
 
 class Register:
-	def __init__(self, isEgreso, position, pathFoto, hourFoto, momento):
+	def __init__(self, isEgreso, position, pathFoto, hourFoto, momento, imgBase64):
 		self.isEgreso = isEgreso
 		self.position = position
 		self.pathFoto = pathFoto
 		self.hourFoto = hourFoto
 		self.momento = momento
+		self.imgBase64 = imgBase64
 
 	def getPosition(self):
  		return self.position
