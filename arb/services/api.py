@@ -1,7 +1,8 @@
 import requests,json
 
 #Se debe pasar por parámetro
-url = 'http://127.0.0.1:8000/api'  
+#url = 'http://127.0.0.1:8000/api'  
+url = 'https://arb-api-ungs.herokuapp.com/api'
 
 headers = {
     "Content-Type": "application/json"
