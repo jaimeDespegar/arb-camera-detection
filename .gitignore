@@ -3,5 +3,5 @@
 files/data/coordinates_1.yml
 __pycache__/*
 *.pyc
-files/images/*.jpg
+#files/images/*.jpg
 __pycache__/*.pyc
